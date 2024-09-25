@@ -24,6 +24,8 @@ public class PlayerController : MonoBehaviour
         InputMoveKey();
         Look();
 
+        // 상태에 따른 이동속도 차이
+        // 추후 상태별로 애니메이션 다르게 설정할 예정
         switch (curState)
         {
             case State.walk:
@@ -43,6 +45,8 @@ public class PlayerController : MonoBehaviour
     {
         Move();
     }
+
+    // 키 입력받기
     void InputMoveKey()
     {
         dir = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
@@ -59,6 +63,7 @@ public class PlayerController : MonoBehaviour
         { curState = State.walk; }
     }
 
+    // 캐릭터 회전
     void Look()
     {
         if (dir != Vector3.zero)
@@ -67,9 +72,10 @@ public class PlayerController : MonoBehaviour
             transform.rotation = Quaternion.RotateTowards(transform.rotation, turnDir, turnSpeed * Time.deltaTime);
         }
     }
+
+    // 캐릭터 이동 (상태별로 속도 상이)
     private void Move()
     {
-        
         rigid.MovePosition(transform.position + (transform.forward * dir.sqrMagnitude).normalized * curSpeedType * Time.deltaTime);
     }
 
