@@ -1,12 +1,15 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    enum State { walk, run, aim, size }
+    enum State { walk, run, aim }
     State curState;
 
     Rigidbody rigid;
     Vector3 dir;
+    Vector3 mouseDir;
+    Vector3 mousePos;
 
     [Header("속성")]
     [SerializeField] float moveSpeed = 5f;   // 기본 움직임 속도
@@ -38,7 +41,6 @@ public class PlayerController : MonoBehaviour
                 curSpeedType = aimSpeed;
                 break;
         }
-        Debug.Log(curSpeedType);
     }
 
     private void FixedUpdate()
@@ -50,6 +52,10 @@ public class PlayerController : MonoBehaviour
     void InputMoveKey()
     {
         dir = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
+
+        mouseDir = Input.mousePosition;                                         // input.mousePosition 으로 받아온 값은 2D 스크린 좌표라서 z 값이 없다고 함.
+        mouseDir.z = Camera.main.transform.position.y - transform.position.y;   // z값 = 카메라의 깊이 = 카메라의 높이 값 - player의 높이
+        mousePos = Camera.main.ScreenToWorldPoint(mouseDir);                    // 스크린좌표값을 월드좌표값으로 변경
 
         if (Input.GetKey(KeyCode.LeftShift))
         {
@@ -66,6 +72,12 @@ public class PlayerController : MonoBehaviour
     // 캐릭터 회전
     void Look()
     {
+        // 우클릭을 하고 있을 때(조준) 마우스 커서 방향으로 회전
+        if(curState == State.aim) 
+        {
+            transform.LookAt(new Vector3(mousePos.x, transform.position.y, mousePos.z));
+        }
+        // 캐릭터 회전
         if (dir != Vector3.zero)
         {
             Quaternion turnDir = Quaternion.LookRotation(dir, Vector3.up);
@@ -76,7 +88,24 @@ public class PlayerController : MonoBehaviour
     // 캐릭터 이동 (상태별로 속도 상이)
     private void Move()
     {
-        rigid.MovePosition(transform.position + (transform.forward * dir.sqrMagnitude).normalized * curSpeedType * Time.deltaTime);
+        if (curState != State.aim)
+        {
+            rigid.MovePosition(transform.position + (transform.forward * dir.sqrMagnitude).normalized * curSpeedType * Time.deltaTime);
+        }
+        if (curState == State.aim)
+        {
+            Vector3 aimVerticalDir = transform.forward * Input.GetAxis("Vertical") * curSpeedType * Time.deltaTime;
+            Vector3 aimHorizontalDir = transform.right * Input.GetAxis("Horizontal") * curSpeedType * Time.deltaTime;
+            if(Input.GetAxis("Vertical") != 0)
+            {
+                rigid.MovePosition(new Vector3(transform.position.x + aimVerticalDir.x, transform.position.y, transform.position.z + aimVerticalDir.z));
+            }
+            if(Input.GetAxis("Horizontal") != 0)
+            {
+                rigid.MovePosition(new Vector3(transform.position.x + aimHorizontalDir.x, transform.position.y, transform.position.z + aimHorizontalDir.z));
+            }
+            // 조준시 대각선 이동은 어떻게 해야할지 도저히 모르겠다...
+        }
     }
 
 }
