@@ -94,6 +94,7 @@ public class PlayerController : MonoBehaviour
         }
         if (curState == State.aim)
         {
+            
             Vector3 aimVerticalDir = transform.forward * Input.GetAxis("Vertical") * curSpeedType * Time.deltaTime;
             Vector3 aimHorizontalDir = transform.right * Input.GetAxis("Horizontal") * curSpeedType * Time.deltaTime;
             if(Input.GetAxis("Vertical") != 0)
@@ -104,7 +105,7 @@ public class PlayerController : MonoBehaviour
             {
                 rigid.MovePosition(new Vector3(transform.position.x + aimHorizontalDir.x, transform.position.y, transform.position.z + aimHorizontalDir.z));
             }
-            // 조준시 대각선 이동은 어떻게 해야할지 도저히 모르겠다...
+
         }
     }
 
