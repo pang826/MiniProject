@@ -7,6 +7,7 @@ public class CameraController : MonoBehaviour
     [SerializeField] GameObject target;
     [SerializeField] Vector3 offset;
     Vector3 screenCenter;
+    [SerializeField] LayerMask layerMask;
     Ray ray;
     Renderer obj;
     private void Awake()
@@ -38,24 +39,14 @@ public class CameraController : MonoBehaviour
     {
         ray = Camera.main.ScreenPointToRay(screenCenter);
 
-        Physics.Raycast(ray, out RaycastHit hit, 100);
-
-        if (hit.collider != target.GetComponent<Collider>())
+        if(Physics.Raycast(ray, out RaycastHit hit, 100, layerMask))
         {
             obj = hit.collider.gameObject.GetComponent<MeshRenderer>();
             obj.enabled = false;
-
-            //hit.collider.gameObject.GetComponent<MeshRenderer>().enabled = false;
-            
-            Debug.Log(hit.collider.gameObject.name);
         }
-        if(hit.collider == target.GetComponent<Collider>())
+        if(Physics.Raycast(ray, 100, layerMask) == false)
         {
             obj.enabled = true;
-            //hit.collider.gameObject.GetComponent<MeshRenderer>().enabled = true;
         }
-        
-            //meshRenderer.enabled = true;
-        
     }
 }
