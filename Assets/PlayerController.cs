@@ -1,3 +1,4 @@
+using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -6,6 +7,7 @@ public class PlayerController : MonoBehaviour
     enum State { walk, run, aim }
     State curState;
 
+    MeshRenderer mesh;
     Rigidbody rigid;
     Vector3 dir;
     Vector3 mouseDir;
@@ -17,9 +19,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float aimSpeed = 2.5f;    // 조준시 움직임 속도
     float curSpeedType;
     [SerializeField] float turnSpeed = 360f;
+    [SerializeField] int hp;
+    bool isDamaged;
     private void Awake()
     {
+        hp = 30;
         rigid = GetComponent<Rigidbody>();
+        mesh = GetComponent<MeshRenderer>();
     }
 
     private void Update()
@@ -48,6 +54,30 @@ public class PlayerController : MonoBehaviour
         Move();
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.collider.tag == "Monster")
+        {
+            Debug.Log(collision.gameObject.name);
+            if (!isDamaged)
+            {
+                MonsterController monster = collision.collider.GetComponent<MonsterController>();
+                hp -= monster.dmg;
+                StartCoroutine(OnDamage());
+            }
+        }
+    }
+
+    IEnumerator OnDamage()
+    {
+        WaitForSeconds delay = new WaitForSeconds(1f);
+
+        isDamaged = true;
+        mesh.material.color = Color.red;
+        yield return delay;
+        isDamaged = false;
+        mesh.material.color = Color.yellow;
+    }
     // 키 입력받기
     void InputMoveKey()
     {

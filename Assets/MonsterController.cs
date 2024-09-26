@@ -1,31 +1,34 @@
+using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class MonsterController : MonoBehaviour
 {
-
     [SerializeField] enum State { idle, patrol, trace, attack, die }
     [SerializeField] State curState;
     [SerializeField] GameObject target;
     [SerializeField] NavMeshAgent nav;
-    Vector3 curPos;
-    Ray ray;
-    [SerializeField] LayerMask layerMask;
+    
+
     [Header("¼Ó¼º")]
     [SerializeField] Rigidbody rigid;
     [SerializeField] float speed;
-    [SerializeField] int hp;
+    public int hp;
+    public int dmg;
     [SerializeField] float detectDist;
-
+    [SerializeField] float attackRange;
     private void Awake()
     {
-        rigid = GetComponent<Rigidbody>();
         speed = 5f;
         hp = 20;
-        detectDist = 30f;
+        dmg = 3;
+        detectDist = 30;
+        attackRange = 3;
+        rigid = GetComponent<Rigidbody>();
         nav = GetComponent<NavMeshAgent>();
         curState = State.idle;
+        
     }
     private void Start()
     {
@@ -34,43 +37,31 @@ public class MonsterController : MonoBehaviour
 
     private void Update()
     {
-        Move();
         switch (curState)
         {
             case State.idle:
                 Idle();
                 break;
-            case State.patrol:
-                break;
             case State.trace:
                 Trace();
                 break;
             case State.attack:
+                Attack();
                 break;
             case State.die:
+                DIe();
                 break;
         }
     }
 
-    private void FixedUpdate()
-    {
-        
-    }
     void Idle()
     {
+        nav.SetDestination(transform.position);
+        
         if (Vector3.Distance(transform.position, target.transform.position) <= detectDist)
         {
             curState = State.trace;
         }
-        if(Vector3.Distance(transform.position, target.transform.position) > detectDist)
-        {
-            nav.SetDestination(transform.position);
-        }
-    }
-
-    void Patrol()
-    {
-        
     }
 
     void Trace()
@@ -80,22 +71,18 @@ public class MonsterController : MonoBehaviour
         {
             curState = State.idle;
         }
-        //if(Vector3.Distance(transform.position, target.transform.position) < 20)
-        //{
-        //    nav.SetDestination(target.transform.position);
-        //    curPos = transform.position;
-        //}
-        //
-        //if(Vector3.Distance(transform.position, target.transform.position) >= 20)
-        //{
-        //    transform.position = curPos;
-        //    curState = State.idle;
-        //}
-
+        else if(Vector3.Distance(transform.position,target.transform.position) <= attackRange)
+        {
+            curState = State.attack;
+        }
     }
 
     void Attack()
     {
+        if(Vector3.Distance(transform.position, target.transform.position) > attackRange)
+        {
+            curState = State.trace;
+        }
 
     }
 
@@ -103,9 +90,4 @@ public class MonsterController : MonoBehaviour
     {
 
     }
-    void Move()
-    {
-        //rigid.MovePosition(transform.position + (transform.forward * target.transform.position.sqrMagnitude) * speed * Time.deltaTime);
-    }
-
 }
