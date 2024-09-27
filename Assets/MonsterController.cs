@@ -10,6 +10,7 @@ public class MonsterController : MonoBehaviour
     [SerializeField] GameObject target;
     [SerializeField] NavMeshAgent nav;
     [SerializeField] MeshRenderer mesh;
+    [SerializeField] GameObject melee;
 
     [Header("속성")]
     [SerializeField] Rigidbody rigid;
@@ -26,6 +27,7 @@ public class MonsterController : MonoBehaviour
         dmg = 3;
         detectDist = 30;
         attackRange = 3;
+        isDamaged = false;
         rigid = GetComponent<Rigidbody>();
         nav = GetComponent<NavMeshAgent>();
         mesh = GetComponent<MeshRenderer>();
@@ -34,6 +36,7 @@ public class MonsterController : MonoBehaviour
     private void Start()
     {
         target = GameObject.FindGameObjectWithTag("Player");
+        melee = GameObject.FindGameObjectWithTag("Melee");
     }
 
     private void Update()
@@ -55,13 +58,20 @@ public class MonsterController : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
-        if(collision.collider.tag == "Player")
+        Debug.Log(other.gameObject.name);
+        if(other == melee)
         {
-            // 플레이어 무기를 구현하면 
+            Melee meleee = melee.GetComponent<Melee>();
+            if(!isDamaged)
+            {
+                hp -= meleee.dmg;
+                StartCoroutine(OnDamage());
+            }
         }
     }
+    
     void Idle()
     {
         nav.SetDestination(transform.position);

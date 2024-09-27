@@ -10,12 +10,13 @@ public class PlayerController : MonoBehaviour
 
     MeshRenderer[] meshs;
     Rigidbody rigid;
-    [SerializeField] Animator animator;
+    
     Vector3 dir;
     Vector3 mouseDir;
     Vector3 mousePos;
 
     [Header("속성")]
+    [SerializeField] Animator animator;
     [SerializeField] float curSpeedType;
     [SerializeField] float moveSpeed = 5f;   // 기본 움직임 속도
     [SerializeField] float runSpeed = 8f;    // 질주 속도
@@ -44,11 +45,11 @@ public class PlayerController : MonoBehaviour
         switch (curState)
         {
             case State.idle:
-                animator.Play("Standing Idle");
+                animator.Play("Idle");
                 Idle();
                 break;
             case State.walk:
-                animator.Play("Walk With Briefcase");
+                animator.Play("Walk With Weapon");
                 Walk();
                 break;
             case State.run:
@@ -193,7 +194,24 @@ public class PlayerController : MonoBehaviour
 
     void Aim()
     {
+        // 이후에 바라보는 방향에 맞춰 애니메이션 변화 필요
         transform.LookAt(new Vector3(mousePos.x, transform.position.y, mousePos.z));
+        if(Input.GetKey(KeyCode.W))
+        {
+            animator.Play("Aim Walk Forward");
+        }
+        else if(Input.GetKey(KeyCode.S))
+        {
+            animator.Play("Aim Walk Back");
+        }
+        else if(Input.GetKey(KeyCode.A))
+        {
+            animator.Play("Aim Walk Left");
+        }
+        else if(Input.GetKey(KeyCode.D))
+        {
+            animator.Play("Aim Walk Right");
+        }
 
         if (Input.GetKey(KeyCode.LeftShift))
         {
@@ -202,6 +220,10 @@ public class PlayerController : MonoBehaviour
         if(Input.GetMouseButtonUp(1))
         {
             curState = pastState;
+        }
+        if(Input.GetMouseButtonDown(0))
+        {
+            animator.Play("AttackMotion");
         }
     }
 
