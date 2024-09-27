@@ -9,15 +9,16 @@ public class MonsterController : MonoBehaviour
     [SerializeField] State curState;
     [SerializeField] GameObject target;
     [SerializeField] NavMeshAgent nav;
-    
+    [SerializeField] MeshRenderer mesh;
 
     [Header("속성")]
     [SerializeField] Rigidbody rigid;
     [SerializeField] float speed;
-    public int hp;
+    [SerializeField] int hp;
     public int dmg;
     [SerializeField] float detectDist;
     [SerializeField] float attackRange;
+    bool isDamaged;
     private void Awake()
     {
         speed = 5f;
@@ -27,8 +28,8 @@ public class MonsterController : MonoBehaviour
         attackRange = 3;
         rigid = GetComponent<Rigidbody>();
         nav = GetComponent<NavMeshAgent>();
+        mesh = GetComponent<MeshRenderer>();
         curState = State.idle;
-        
     }
     private void Start()
     {
@@ -54,6 +55,13 @@ public class MonsterController : MonoBehaviour
         }
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if(collision.collider.tag == "Player")
+        {
+            // 플레이어 무기를 구현하면 
+        }
+    }
     void Idle()
     {
         nav.SetDestination(transform.position);
@@ -83,11 +91,24 @@ public class MonsterController : MonoBehaviour
         {
             curState = State.trace;
         }
-
+        if(hp <= 0)
+        {
+            curState = State.die;
+        }
     }
 
     void DIe()
     {
+        nav.SetDestination(transform.position);
+        MeshRenderer mesh = new MeshRenderer();
+        mesh.material.color = Color.black;
+    }
+    IEnumerator OnDamage()
+    {
+        WaitForSeconds delay = new WaitForSeconds(1f);
 
+        isDamaged = true;
+        yield return delay;
+        isDamaged = false;
     }
 }
