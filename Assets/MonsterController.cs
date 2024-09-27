@@ -60,7 +60,6 @@ public class MonsterController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log(other.gameObject.name);
         if(other == melee)
         {
             Melee meleee = melee.GetComponent<Melee>();

@@ -7,31 +7,26 @@ public class Melee : MonoBehaviour
 {
     BoxCollider attackRange;
     Coroutine attack;
-    bool isAttack;
     public int dmg;
-    [SerializeField] float attackSpeed;
+    public float attackSpeed;
 
     private void Awake()
     {
         dmg = 3;
-        attackSpeed = 0.3f;
+        attackSpeed = 1.5f;
         attackRange = GetComponent<BoxCollider>();
         attackRange.enabled = false;
-        isAttack = false;
     }
-    void Attack()
+    public void Attack()
     {
-        StopCoroutine(attack);
         attack = StartCoroutine(Swing());
     }
     IEnumerator Swing()
     {
-        yield return new WaitForSeconds(attackSpeed - 0.1f);
-        isAttack = true;
+        yield return new WaitForSeconds(0.3f);
         attackRange.enabled = true;
-        yield return new WaitForSeconds(attackSpeed);
+        yield return new WaitForSeconds(1f);
         attackRange.enabled = false;
-        yield return new WaitForSeconds(attackSpeed);
-        isAttack = false;
+        yield break;
     }
 }

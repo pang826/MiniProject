@@ -8,34 +8,44 @@ public class PlayerController : MonoBehaviour
     State curState;
     State pastState;
 
-    MeshRenderer[] meshs;
-    Rigidbody rigid;
-    
     Vector3 dir;
     Vector3 mouseDir;
     Vector3 mousePos;
 
     [Header("속성")]
     [SerializeField] Animator animator;
+    [SerializeField] Rigidbody rigid;
+    [SerializeField] MeshRenderer[] meshs;
+    [SerializeField] Melee melee;
+
     [SerializeField] float curSpeedType;
     [SerializeField] float moveSpeed = 5f;   // 기본 움직임 속도
     [SerializeField] float runSpeed = 8f;    // 질주 속도
     [SerializeField] float aimSpeed = 2.5f;  // 조준시 움직임 속도
-    
     [SerializeField] float turnSpeed = 360f;
+    [SerializeField] float attackDelay;      // 다시 공격하는데 걸리는 시간
+
     [SerializeField] int hp;
-    bool isDamaged;
+    bool isDamaged; // 피격 여부
+    bool isAttack;  // 공격 여부
     private void Awake()
     {
         hp = 30;
         rigid = GetComponent<Rigidbody>();
         meshs = GetComponentsInChildren<MeshRenderer>();
         animator = GetComponent<Animator>();
+        melee = GetComponentInChildren<Melee>();
+        isAttack = false;
+        animator.SetBool("isAttack", true);
     }
 
+    private void Start()
+    {
+    }
     private void Update()
     {
         InputMoveKey();
+        
         if (pastState != curState && curState != State.aim)
         {
             pastState = curState;
@@ -45,15 +55,12 @@ public class PlayerController : MonoBehaviour
         switch (curState)
         {
             case State.idle:
-                animator.Play("Idle");
                 Idle();
                 break;
             case State.walk:
-                animator.Play("Walk With Weapon");
                 Walk();
                 break;
             case State.run:
-                animator.Play("Run");
                 Run();
                 break;
             case State.aim:
@@ -77,7 +84,7 @@ public class PlayerController : MonoBehaviour
                 break;
         }
     }
-
+    
     // 피격
     private void OnCollisionEnter(Collision collision)
     {
@@ -110,30 +117,54 @@ public class PlayerController : MonoBehaviour
         {
             mesh.material.color = Color.white;
         }
+        yield break;
+    }
+
+    IEnumerator AttackMotion()
+    {
+        animator.SetBool("isAttack", false);
+        //yield return new WaitForSeconds(1f);
+        yield return null;
+        animator.SetBool("isAttack", true);
+        StopCoroutine("AttackMotion");
+    }
+    void Attack()
+    {
+        attackDelay += Time.deltaTime;
+        if (melee.attackSpeed <= attackDelay)
+        {
+            isAttack = false;
+        }
+        if (!isAttack && Input.GetMouseButtonDown(0) && curState == State.aim)
+        {
+            melee.Attack();
+            attackDelay = 0f;
+            isAttack = true;
+            StartCoroutine("AttackMotion");
+        }
     }
     // 키 입력받기
     void InputMoveKey()
     {
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            curState = State.run;
+        }
+
         dir = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
 
         mouseDir = Input.mousePosition;                                         // input.mousePosition 으로 받아온 값은 2D 스크린 좌표라서 z 값이 없다고 함.
         mouseDir.z = Camera.main.transform.position.y - transform.position.y;   // z값 = 카메라의 깊이 = 카메라의 높이 값 - player의 높이
         mousePos = Camera.main.ScreenToWorldPoint(mouseDir);                    // 스크린좌표값을 월드좌표값으로 변경
-        if(Input.anyKey == false)
-        {
-            curState = State.idle;
-        }
+        
     }
 
     void Idle()
     {
+        animator.SetBool("isWalking", false);
         if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D))
         {
             curState = State.walk;
-        }
-        if (Input.GetKey(KeyCode.LeftShift))
-        {
-            curState = State.run;
         }
         else if (Input.GetMouseButton(1))
         {
@@ -143,6 +174,9 @@ public class PlayerController : MonoBehaviour
     
     void Walk()
     {
+        animator.SetBool("isRunning", false);
+        animator.SetBool("isWalking", true);
+
         curSpeedType = moveSpeed;
         if (dir != Vector3.zero)
         {
@@ -157,6 +191,10 @@ public class PlayerController : MonoBehaviour
         {
             curState = State.aim;
         }
+        else if (Input.anyKey == false)
+        {
+            curState = State.idle;
+        }
     }
 
     void WalkMove()
@@ -166,6 +204,11 @@ public class PlayerController : MonoBehaviour
 
     void Run()
     {
+        if(rigid.velocity.z < 0.5f)
+        {
+            animator.SetBool("isRunning", true);
+        }
+        
         curSpeedType = runSpeed;
         if (dir != Vector3.zero)
         {
@@ -194,23 +237,38 @@ public class PlayerController : MonoBehaviour
 
     void Aim()
     {
+        animator.SetBool("isAiming", true);
+        animator.SetBool("isWalking", false);
         // 이후에 바라보는 방향에 맞춰 애니메이션 변화 필요
         transform.LookAt(new Vector3(mousePos.x, transform.position.y, mousePos.z));
-        if(Input.GetKey(KeyCode.W))
+        Attack();
+
+        if(Input.GetAxisRaw("Horizontal") == 1)
         {
-            animator.Play("Aim Walk Forward");
+            animator.SetBool("AimRight", true);
         }
-        else if(Input.GetKey(KeyCode.S))
+        else if(Input.GetAxisRaw("Horizontal") == -1)
         {
-            animator.Play("Aim Walk Back");
+            animator.SetBool("AimLeft", true);
         }
-        else if(Input.GetKey(KeyCode.A))
+        else if(Input.GetAxisRaw("Horizontal") == 0)
         {
-            animator.Play("Aim Walk Left");
+            animator.SetBool("AimRight", false);
+            animator.SetBool("AimLeft", false);
         }
-        else if(Input.GetKey(KeyCode.D))
+        
+        if (Input.GetAxisRaw("Vertical") == 1)
         {
-            animator.Play("Aim Walk Right");
+            animator.SetBool("AimForward", true);
+        }
+        else if (Input.GetAxisRaw("Vertical") == -1)
+        {
+            animator.SetBool("AimBack", true);
+        }
+        else if (Input.GetAxisRaw("Vertical") == 0)
+        {
+            animator.SetBool("AimForward", false);
+            animator.SetBool("AimBack", false);
         }
 
         if (Input.GetKey(KeyCode.LeftShift))
@@ -219,17 +277,21 @@ public class PlayerController : MonoBehaviour
         }
         if(Input.GetMouseButtonUp(1))
         {
+            animator.SetBool("AimRight", false);
+            animator.SetBool("AimLeft", false);
+            animator.SetBool("AimForward", false);
+            animator.SetBool("AimBack", false);
+            animator.SetBool("isAiming", false);
             curState = pastState;
-        }
-        if(Input.GetMouseButtonDown(0))
-        {
-            animator.Play("AttackMotion");
         }
     }
 
     void AimMove()
     {
         curSpeedType = aimSpeed;
-        rigid.MovePosition(transform.position + dir * curSpeedType * Time.deltaTime);
+        if(animator.GetBool("isAttack") == true)
+        {
+            rigid.MovePosition(transform.position + dir * curSpeedType * Time.deltaTime);
+        }
     }
 }
