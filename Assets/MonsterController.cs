@@ -63,14 +63,39 @@ public class MonsterController : MonoBehaviour
         if(other.tag == "Melee")
         {
             Melee meleee = melee.GetComponent<Melee>();
-            if(!isDamaged)
+            if(!isDamaged && curState != State.die)
             {
                 hp -= meleee.dmg;
                 StartCoroutine(OnDamage());
             }
         }
     }
-    
+    IEnumerator OnDamage()
+    {
+        // 무적시간 시작(데미지를 받았는지에 대한 여부)
+        isDamaged = true;
+        // 경직
+        nav.SetDestination(transform.position);
+        // 매터리얼 색상 변화
+        foreach (MeshRenderer mesh in meshs)
+        {
+            mesh.material.color = Color.red;
+        }
+
+        // 무적시간
+        yield return new WaitForSeconds(0.5f);
+
+        // 무적시간 끝
+        isDamaged = false;
+        // 재추적
+        yield return new WaitForSeconds(0.5f);
+        nav.SetDestination(target.transform.position);
+        // 매터리얼 색상 복구
+        foreach (MeshRenderer mesh in meshs)
+        {
+            mesh.material.color = Color.white;
+        }
+    }
     void Idle()
     {
         nav.SetDestination(transform.position);
@@ -78,6 +103,10 @@ public class MonsterController : MonoBehaviour
         if (Vector3.Distance(transform.position, target.transform.position) <= detectDist)
         {
             curState = State.trace;
+        }
+        if (hp <= 0)
+        {
+            curState = State.die;
         }
     }
 
@@ -92,6 +121,10 @@ public class MonsterController : MonoBehaviour
         {
             curState = State.attack;
         }
+        if (hp <= 0)
+        {
+            curState = State.die;
+        }
     }
 
     void Attack()
@@ -104,7 +137,7 @@ public class MonsterController : MonoBehaviour
         {
             StartCoroutine(AttackCoroutine());
         }
-        if(hp <= 0)
+        if (hp <= 0)
         {
             curState = State.die;
         }
@@ -128,22 +161,5 @@ public class MonsterController : MonoBehaviour
         }
         
     }
-    IEnumerator OnDamage()
-    {
-        WaitForSeconds delay = new WaitForSeconds(0.8f);
-
-        // 데미지를 받았는지에 대한 여부
-        isDamaged = true;
-        // 매터리얼 색상 변화
-        foreach ( MeshRenderer mesh in meshs)
-        {
-            mesh.material.color = Color.red;
-        }
-        yield return delay;
-        isDamaged = false;
-        foreach (MeshRenderer mesh in meshs)
-        {
-            mesh.material.color = Color.white;
-        }
-    }
+    
 }
