@@ -90,10 +90,11 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.collider.tag == "Monster")
         {
-            Debug.Log(collision.gameObject.name);
-            if (!isDamaged)
+            MonsterController monster = collision.collider.GetComponent<MonsterController>();
+            
+            if (!isDamaged && monster.curState != MonsterController.State.die)
             {
-                MonsterController monster = collision.collider.GetComponent<MonsterController>();
+                Debug.Log(collision.gameObject.name);
                 hp -= monster.dmg;
                 StartCoroutine(OnDamage());
             }
@@ -110,7 +111,6 @@ public class PlayerController : MonoBehaviour
         {
             mesh.material.color = Color.red;
         }
-        
         yield return delay;
         isDamaged = false;
         foreach (MeshRenderer mesh in meshs)
@@ -123,7 +123,7 @@ public class PlayerController : MonoBehaviour
     IEnumerator AttackMotion()
     {
         animator.SetBool("isAttack", false);
-        yield return new WaitForSeconds(1.2f);
+        yield return new WaitForSeconds(1f);
         animator.SetBool("isAttack", true);
         StopCoroutine("AttackMotion");
     }
@@ -198,6 +198,7 @@ public class PlayerController : MonoBehaviour
 
     void WalkMove()
     {
+        if (animator.GetBool("isAttack") == true)
         rigid.MovePosition(transform.position + (transform.forward * dir.sqrMagnitude).normalized * curSpeedType * Time.deltaTime);
     }
 

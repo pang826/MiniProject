@@ -13,7 +13,7 @@ public class Melee : MonoBehaviour
     private void Awake()
     {
         dmg = 3;
-        attackSpeed = 1.2f;
+        attackSpeed = 1f;
         attackRange = GetComponent<BoxCollider>();
         attackRange.enabled = false;
     }
@@ -23,11 +23,11 @@ public class Melee : MonoBehaviour
     }
     IEnumerator Swing()
     {
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.2f);
         attackRange.enabled = true;
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.7f);
         attackRange.enabled = false;
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.2f);
         yield break;
     }
 }

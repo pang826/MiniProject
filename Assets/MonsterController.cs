@@ -5,8 +5,8 @@ using UnityEngine.AI;
 
 public class MonsterController : MonoBehaviour
 {
-    [SerializeField] enum State { idle, patrol, trace, attack, die }
-    [SerializeField] State curState;
+    public enum State { idle, patrol, trace, attack, die }
+    public State curState;
     [SerializeField] GameObject target;
     [SerializeField] NavMeshAgent nav;
     [SerializeField] MeshRenderer[] meshs;
@@ -100,10 +100,19 @@ public class MonsterController : MonoBehaviour
         {
             curState = State.trace;
         }
+        else
+        {
+            StartCoroutine(AttackCoroutine());
+        }
         if(hp <= 0)
         {
             curState = State.die;
         }
+    }
+
+    IEnumerator AttackCoroutine()
+    {
+        yield return null;
     }
 
     void DIe()
@@ -112,13 +121,20 @@ public class MonsterController : MonoBehaviour
         foreach (MeshRenderer mesh in meshs)
         {
             mesh.material.color = Color.black;
+            // 3초후 삭제
+            Destroy(gameObject, 3);
+            // 피격 시 땅이외에는 충돌하지 않게 설정
+            gameObject.layer = 9;
         }
+        
     }
     IEnumerator OnDamage()
     {
-        WaitForSeconds delay = new WaitForSeconds(1f);
+        WaitForSeconds delay = new WaitForSeconds(0.8f);
 
+        // 데미지를 받았는지에 대한 여부
         isDamaged = true;
+        // 매터리얼 색상 변화
         foreach ( MeshRenderer mesh in meshs)
         {
             mesh.material.color = Color.red;
