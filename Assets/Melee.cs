@@ -13,7 +13,7 @@ public class Melee : MonoBehaviour
     private void Awake()
     {
         dmg = 3;
-        attackSpeed = 1.5f;
+        attackSpeed = 1.2f;
         attackRange = GetComponent<BoxCollider>();
         attackRange.enabled = false;
     }
@@ -27,6 +27,7 @@ public class Melee : MonoBehaviour
         attackRange.enabled = true;
         yield return new WaitForSeconds(1f);
         attackRange.enabled = false;
+        yield return new WaitForSeconds(0.5f);
         yield break;
     }
 }

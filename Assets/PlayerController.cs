@@ -123,8 +123,7 @@ public class PlayerController : MonoBehaviour
     IEnumerator AttackMotion()
     {
         animator.SetBool("isAttack", false);
-        //yield return new WaitForSeconds(1f);
-        yield return null;
+        yield return new WaitForSeconds(1.2f);
         animator.SetBool("isAttack", true);
         StopCoroutine("AttackMotion");
     }

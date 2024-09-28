@@ -9,7 +9,7 @@ public class MonsterController : MonoBehaviour
     [SerializeField] State curState;
     [SerializeField] GameObject target;
     [SerializeField] NavMeshAgent nav;
-    [SerializeField] MeshRenderer mesh;
+    [SerializeField] MeshRenderer[] meshs;
     [SerializeField] GameObject melee;
 
     [Header("¼Ó¼º")]
@@ -30,7 +30,7 @@ public class MonsterController : MonoBehaviour
         isDamaged = false;
         rigid = GetComponent<Rigidbody>();
         nav = GetComponent<NavMeshAgent>();
-        mesh = GetComponent<MeshRenderer>();
+        meshs = GetComponentsInChildren<MeshRenderer>();
         curState = State.idle;
     }
     private void Start()
@@ -60,7 +60,7 @@ public class MonsterController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other == melee)
+        if(other.tag == "Melee")
         {
             Melee meleee = melee.GetComponent<Melee>();
             if(!isDamaged)
@@ -109,15 +109,25 @@ public class MonsterController : MonoBehaviour
     void DIe()
     {
         nav.SetDestination(transform.position);
-        MeshRenderer mesh = new MeshRenderer();
-        mesh.material.color = Color.black;
+        foreach (MeshRenderer mesh in meshs)
+        {
+            mesh.material.color = Color.black;
+        }
     }
     IEnumerator OnDamage()
     {
         WaitForSeconds delay = new WaitForSeconds(1f);
 
         isDamaged = true;
+        foreach ( MeshRenderer mesh in meshs)
+        {
+            mesh.material.color = Color.red;
+        }
         yield return delay;
         isDamaged = false;
+        foreach (MeshRenderer mesh in meshs)
+        {
+            mesh.material.color = Color.white;
+        }
     }
 }

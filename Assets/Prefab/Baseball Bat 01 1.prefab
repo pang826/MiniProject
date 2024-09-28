@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 6697075414311235740}
   m_Layer: 0
   m_Name: Baseball Bat 01 1
-  m_TagString: Weapon
+  m_TagString: Melee
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -50,6 +50,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dmg: 0
+  attackSpeed: 0
 --- !u!65 &8932127750458744741
 BoxCollider:
   m_ObjectHideFlags: 0
