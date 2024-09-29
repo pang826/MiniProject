@@ -5,6 +5,7 @@ using UnityEngine.AI;
 
 public class MonsterController : MonoBehaviour
 {
+    public MonsterData data;
     public enum State { idle, patrol, trace, attack, die }
     public State curState;
     [SerializeField] GameObject target;
@@ -14,19 +15,18 @@ public class MonsterController : MonoBehaviour
 
     [Header("속성")]
     [SerializeField] Rigidbody rigid;
-    [SerializeField] float speed;
-    [SerializeField] int hp;
-    public int dmg;
-    [SerializeField] float detectDist;
-    [SerializeField] float attackRange;
+    [SerializeField] int curHp;
+    //public int dmg;
+    //[SerializeField] float detectDist;
+    //[SerializeField] float attackRange;
+    //[SerializeField] float speed;
     bool isDamaged;
     private void Awake()
     {
-        speed = 5f;
-        hp = 20;
-        dmg = 3;
-        detectDist = 30;
-        attackRange = 3;
+        //speed = 5f;
+        //dmg = 3;
+        //detectDist = 30;
+        //attackRange = 3;
         isDamaged = false;
         rigid = GetComponent<Rigidbody>();
         nav = GetComponent<NavMeshAgent>();
@@ -35,8 +35,11 @@ public class MonsterController : MonoBehaviour
     }
     private void Start()
     {
+        curHp = data.Hp;
+        nav.speed = data.Speed;
         target = GameObject.FindGameObjectWithTag("Player");
         melee = GameObject.FindGameObjectWithTag("Melee");
+        
     }
 
     private void Update()
@@ -65,10 +68,8 @@ public class MonsterController : MonoBehaviour
             Melee meleee = melee.GetComponent<Melee>();
             if(!isDamaged)
             {
-                hp -= meleee.dmg;
+                curHp -= meleee.dmg;
                 StartCoroutine(OnDamage());
-
-                
             }
             if(isDamaged)
             {
@@ -86,10 +87,8 @@ public class MonsterController : MonoBehaviour
         {
             mesh.material.color = Color.red;
         }
-
         // 무적시간
         yield return new WaitForSeconds(0.5f);
-
         // 매터리얼 색상 복구
         foreach (MeshRenderer mesh in meshs)
         {
@@ -99,18 +98,17 @@ public class MonsterController : MonoBehaviour
         isDamaged = false;
         // 재추적
         yield return new WaitForSeconds(1f);
-
         yield break;
     }
     void Idle()
     {
         nav.SetDestination(transform.position);
         
-        if (Vector3.Distance(transform.position, target.transform.position) <= detectDist)
+        if (Vector3.Distance(transform.position, target.transform.position) <= data.DetectDist)
         {
             curState = State.trace;
         }
-        if (hp <= 0)
+        if (curHp <= 0)
         {
             curState = State.die;
         }
@@ -119,15 +117,15 @@ public class MonsterController : MonoBehaviour
     void Trace()
     {
         nav.SetDestination(target.transform.position);
-        if(Vector3.Distance(transform.position, target.transform.position) >= detectDist + 5)
+        if(Vector3.Distance(transform.position, target.transform.position) >= data.DetectDist + 5)
         {
             curState = State.idle;
         }
-        else if(Vector3.Distance(transform.position,target.transform.position) <= attackRange)
+        else if(Vector3.Distance(transform.position,target.transform.position) <= data.AttackRange)
         {
             curState = State.attack;
         }
-        if (hp <= 0)
+        if (curHp <= 0)
         {
             curState = State.die;
         }
@@ -135,7 +133,7 @@ public class MonsterController : MonoBehaviour
 
     void Attack()
     {
-        if(Vector3.Distance(transform.position, target.transform.position) > attackRange)
+        if(Vector3.Distance(transform.position, target.transform.position) > data.AttackRange)
         {
             curState = State.trace;
         }
@@ -143,7 +141,7 @@ public class MonsterController : MonoBehaviour
         {
             StartCoroutine(AttackCoroutine());
         }
-        if (hp <= 0)
+        if (curHp <= 0)
         {
             curState = State.die;
         }
@@ -166,5 +164,4 @@ public class MonsterController : MonoBehaviour
             gameObject.layer = 9;
         }
     }
-    
 }

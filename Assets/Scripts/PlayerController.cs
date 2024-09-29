@@ -96,7 +96,8 @@ public class PlayerController : MonoBehaviour
             if (!isDamaged && monster.curState != MonsterController.State.die)
             {
                 Debug.Log(collision.gameObject.name);
-                hp -= monster.dmg;
+                Debug.Log(hp);
+                hp -= monster.data.Dmg;
                 StartCoroutine(OnDamage());
             }
         }
