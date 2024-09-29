@@ -63,10 +63,17 @@ public class MonsterController : MonoBehaviour
         if(other.tag == "Melee")
         {
             Melee meleee = melee.GetComponent<Melee>();
-            if(!isDamaged && curState != State.die)
+            if(!isDamaged)
             {
                 hp -= meleee.dmg;
                 StartCoroutine(OnDamage());
+
+                
+            }
+            if(isDamaged)
+            {
+                // 경직
+                nav.SetDestination(transform.position);
             }
         }
     }
@@ -74,8 +81,6 @@ public class MonsterController : MonoBehaviour
     {
         // 무적시간 시작(데미지를 받았는지에 대한 여부)
         isDamaged = true;
-        // 경직
-        nav.SetDestination(transform.position);
         // 매터리얼 색상 변화
         foreach (MeshRenderer mesh in meshs)
         {
@@ -85,16 +90,17 @@ public class MonsterController : MonoBehaviour
         // 무적시간
         yield return new WaitForSeconds(0.5f);
 
-        // 무적시간 끝
-        isDamaged = false;
-        // 재추적
-        yield return new WaitForSeconds(0.5f);
-        nav.SetDestination(target.transform.position);
         // 매터리얼 색상 복구
         foreach (MeshRenderer mesh in meshs)
         {
             mesh.material.color = Color.white;
         }
+        // 무적시간 끝
+        isDamaged = false;
+        // 재추적
+        yield return new WaitForSeconds(1f);
+
+        yield break;
     }
     void Idle()
     {
@@ -159,7 +165,6 @@ public class MonsterController : MonoBehaviour
             // 피격 시 땅이외에는 충돌하지 않게 설정
             gameObject.layer = 9;
         }
-        
     }
     
 }

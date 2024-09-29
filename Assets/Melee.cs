@@ -25,7 +25,7 @@ public class Melee : MonoBehaviour
     {
         yield return new WaitForSeconds(0.2f);
         attackRange.enabled = true;
-        yield return new WaitForSeconds(0.7f);
+        yield return new WaitForSeconds(0.5f);
         attackRange.enabled = false;
         yield return new WaitForSeconds(0.2f);
         yield break;

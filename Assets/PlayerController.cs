@@ -16,6 +16,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] Animator animator;
     [SerializeField] Rigidbody rigid;
     [SerializeField] MeshRenderer[] meshs;
+    [SerializeField] Material[] materials;
     [SerializeField] Melee melee;
 
     [SerializeField] float curSpeedType;
@@ -111,6 +112,7 @@ public class PlayerController : MonoBehaviour
         {
             mesh.material.color = Color.red;
         }
+
         yield return delay;
         isDamaged = false;
         foreach (MeshRenderer mesh in meshs)
@@ -239,6 +241,7 @@ public class PlayerController : MonoBehaviour
     {
         animator.SetBool("isAiming", true);
         animator.SetBool("isWalking", false);
+        animator.SetBool("isRunning", false);
         // 이후에 바라보는 방향에 맞춰 애니메이션 변화 필요
         transform.LookAt(new Vector3(mousePos.x, transform.position.y, mousePos.z));
         Attack();

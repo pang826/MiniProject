@@ -6,14 +6,13 @@ public class CameraController : MonoBehaviour
     [SerializeField] Vector3 offset;
     [SerializeField] LayerMask layerMask;
     Vector3 screenCenter;
-    //[SerializeField] Material buildingMaterial;
     [SerializeField] MeshRenderer[] meshs;
     [SerializeField] Material[] materials;
     int size;
 
     private void Awake()
     {
-        screenCenter = new Vector3(Camera.main.pixelWidth / 2, Camera.main.pixelHeight / 2);
+        screenCenter = new Vector3(Camera.main.pixelWidth / 2, Camera.main.pixelHeight / 2 - 1);
     }
 
     private void Update()
@@ -34,46 +33,30 @@ public class CameraController : MonoBehaviour
     void SeeThroughBuilding()
     {
         Ray ray = Camera.main.ScreenPointToRay(screenCenter);
-
-        //// layerMask로 설정한 layer에 raycast가 닿을 경우 해당 오브젝트의 매터리얼 투명도를 0.1f로 설정
-        //if (Physics.Raycast(ray, out RaycastHit hit, 100, layerMask))
-        //{
-        //    buildingMaterial = hit.collider.gameObject.GetComponent<MeshRenderer>().material;
-        //    buildingMaterial.color = new Color(buildingMaterial.color.r, buildingMaterial.color.g, buildingMaterial.color.b, 0.1f);
-        //}
-        //// 해당 오브젝트가 정해져있고 그 오브젝트가 0.1f의 투명도를 가졌을 경우 raycast에 닿지 않으면 투명도 1로 복구
-        //// 조건 뒷부분을 사용하지 않으면 무한히 실행하는 문제가 있음
-        //else if (buildingMaterial != null && buildingMaterial.color.a == 0.1f)
-        //{
-        //    buildingMaterial.color = new Color(buildingMaterial.color.r, buildingMaterial.color.g, buildingMaterial.color.b, 1f);
-        //}
-        if (Physics.Raycast(ray, out RaycastHit hit, 100, layerMask))
+        
+        if (Physics.Raycast(ray, out RaycastHit hit, 50, layerMask))
         {
+            // raycast에 닿은 오브젝트의 모든 메쉬렌더 컴포넌트를 배열에 담기(자식오브젝트 포함)
             meshs = hit.collider.gameObject.GetComponentsInChildren<MeshRenderer>();
+            // 메쉬렌더 배열의 사이즈 체크
             size = meshs.Length;
+            // 매터리얼 배열의 사이즈도 동일하게 초기화
             materials = new Material[size];
-
+            // 메터리얼 배열에 각 오브젝트의 메쉬렌더의 메터리얼 넣기
             for (int i = 0; i < size; i++)
             {
                 materials[i] = meshs[i].material;
             }
+            // 각 오브젝트 메터리얼의 투명도 조절
             for (int j = 0; j < size; j++)
             {
                 materials[j].color = new Color(materials[j].color.r, materials[j].color.g, materials[j].color.b, 0.1f);
             }
-
-            //foreach (Material material in materials)
-            //{
-            //    material.color = new Color(material.color.r, material.color.g, material.color.b, 0.1f);
-            //}
         }
+        // 플레이어가 raycast를 쏜 오브젝트와 떨어지고 메터리얼 배열에 값이 있을 경우에만 진행
         else if (materials != null)
         {
-            // foreach (Material material in materials)
-            // {
-            //     material.color = new Color(material.color.r, material.color.g, material.color.b, 1f);
-            // }
-            
+            // 각 오브젝트 메터리얼의 투명도 복구
             for (int x = 0; x < size; x++)
             {
                 materials[x].color = new Color(materials[x].color.r, materials[x].color.g, materials[x].color.b, 1f);
