@@ -1,10 +1,9 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    enum State { idle, walk, run, aim }
+    enum State { idle, walk, run, aim, die }
     State curState;
     State pastState;
 
@@ -13,7 +12,7 @@ public class PlayerController : MonoBehaviour
     Vector3 mousePos;
 
     [Header("속성")]
-    [SerializeField] Animator animator;
+    [SerializeField] Animator anim;
     [SerializeField] Rigidbody rigid;
     [SerializeField] MeshRenderer[] meshs;
     [SerializeField] Material[] materials;
@@ -30,24 +29,24 @@ public class PlayerController : MonoBehaviour
     [SerializeField] int hp;
     bool isDamaged; // 피격 여부
     bool isAttack;  // 공격 여부
+    bool isDie;     // 사망 여부
     private void Awake()
     {
-        hp = 30;
+        hp = 3;
         rigid = GetComponent<Rigidbody>();
         meshs = GetComponentsInChildren<MeshRenderer>();
-        animator = GetComponent<Animator>();
+        anim = GetComponent<Animator>();
         melee = GetComponentInChildren<Melee>();
+        isDamaged = false;
         isAttack = false;
-        animator.SetBool("isAttack", true);
+        isDie = false;
+        anim.SetBool("isAttack", true);
     }
 
-    private void Start()
-    {
-    }
     private void Update()
     {
+
         InputMoveKey();
-        
         if (pastState != curState && curState != State.aim)
         {
             pastState = curState;
@@ -68,6 +67,9 @@ public class PlayerController : MonoBehaviour
             case State.aim:
                 Aim();
                 break;
+            case State.die:
+                Die();
+                break;
         }
     }
 
@@ -86,48 +88,40 @@ public class PlayerController : MonoBehaviour
                 break;
         }
     }
-    
+
     // 피격
     private void OnCollisionEnter(Collision collision)
     {
         MonsterController monster = collision.collider.GetComponent<MonsterController>();
-        if (collision.collider == monster.GetComponent<BoxCollider>())
+        if (collision.collider.GetComponent<BoxCollider>() && isDamaged == false && monster.curState != MonsterController.State.die)
         {
-            if (!isDamaged && monster.curState != MonsterController.State.die)
-            {
-                Debug.Log(hp);
-                hp -= monster.data.Dmg;
-                StartCoroutine(OnDamage());
-            }
+            hp -= monster.data.Dmg;
+            Debug.Log(hp);
+            StartCoroutine(OnDamage());
         }
     }
 
     // 피격 무적시간
     IEnumerator OnDamage()
     {
-        WaitForSeconds delay = new WaitForSeconds(1f);
-
-        isDamaged = true;
         SoundManager.Instance.PlaySFX(monsterAttack);
-        foreach(MeshRenderer mesh in meshs)
-        {
-            mesh.material.color = Color.red;
-        }
-
-        yield return delay;
+        yield return new WaitForSeconds(0.2f);
+        isDamaged = true;
+        anim.SetBool("isDamaged", true);
+        
+        yield return new WaitForSeconds(0.1f);
+        anim.SetBool("isDamaged", false);
+        yield return new WaitForSeconds(0.7f);
+        
         isDamaged = false;
-        foreach (MeshRenderer mesh in meshs)
-        {
-            mesh.material.color = Color.white;
-        }
         yield break;
     }
 
     IEnumerator AttackMotion()
     {
-        animator.SetBool("isAttack", false);
+        anim.SetBool("isAttack", false);
         yield return new WaitForSeconds(1f);
-        animator.SetBool("isAttack", true);
+        anim.SetBool("isAttack", true);
         StopCoroutine("AttackMotion");
     }
     void Attack()
@@ -158,12 +152,16 @@ public class PlayerController : MonoBehaviour
         mouseDir = Input.mousePosition;                                         // input.mousePosition 으로 받아온 값은 2D 스크린 좌표라서 z 값이 없다고 함.
         mouseDir.z = Camera.main.transform.position.y - transform.position.y;   // z값 = 카메라의 깊이 = 카메라의 높이 값 - player의 높이
         mousePos = Camera.main.ScreenToWorldPoint(mouseDir);                    // 스크린좌표값을 월드좌표값으로 변경
-        
+
     }
 
     void Idle()
     {
-        animator.SetBool("isWalking", false);
+        if (hp <= 0)
+        {
+            curState = State.die;
+        }
+        anim.SetBool("isWalking", false);
         if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D))
         {
             curState = State.walk;
@@ -173,11 +171,15 @@ public class PlayerController : MonoBehaviour
             curState = State.aim;
         }
     }
-    
+
     void Walk()
     {
-        animator.SetBool("isRunning", false);
-        animator.SetBool("isWalking", true);
+        if (hp <= 0)
+        {
+            curState = State.die;
+        }
+        anim.SetBool("isRunning", false);
+        anim.SetBool("isWalking", true);
 
         curSpeedType = moveSpeed;
         if (dir != Vector3.zero)
@@ -201,28 +203,32 @@ public class PlayerController : MonoBehaviour
 
     void WalkMove()
     {
-        if (animator.GetBool("isAttack") == true)
-        rigid.MovePosition(transform.position + (transform.forward * dir.sqrMagnitude).normalized * curSpeedType * Time.deltaTime);
+        if (anim.GetBool("isAttack") == true)
+            rigid.MovePosition(transform.position + (transform.forward * dir.sqrMagnitude).normalized * curSpeedType * Time.deltaTime);
     }
 
     void Run()
     {
-        if(rigid.velocity.z < 0.5f)
+        if (hp <= 0)
         {
-            animator.SetBool("isRunning", true);
+            curState = State.die;
         }
-        
+        if (rigid.velocity.z < 0.5f)
+        {
+            anim.SetBool("isRunning", true);
+        }
+
         curSpeedType = runSpeed;
         if (dir != Vector3.zero)
         {
             Quaternion turnDir = Quaternion.LookRotation(dir, Vector3.up);
             transform.rotation = Quaternion.RotateTowards(transform.rotation, turnDir, turnSpeed * Time.deltaTime);
         }
-        if(Input.GetKeyUp(KeyCode.LeftShift) && curState != State.aim)
+        if (Input.GetKeyUp(KeyCode.LeftShift) && curState != State.aim)
         {
             curState = State.walk;
         }
-        else if(Input.GetKeyUp(KeyCode.LeftShift) && Input.anyKey == false)
+        else if (Input.GetKeyUp(KeyCode.LeftShift) && Input.anyKey == false)
         {
             curState = State.idle;
         }
@@ -230,7 +236,6 @@ public class PlayerController : MonoBehaviour
         {
             curState = State.aim;
         }
-
     }
 
     void RunMove()
@@ -240,52 +245,56 @@ public class PlayerController : MonoBehaviour
 
     void Aim()
     {
-        animator.SetBool("isAiming", true);
-        animator.SetBool("isWalking", false);
-        animator.SetBool("isRunning", false);
+        if (hp <= 0)
+        {
+            curState = State.die;
+        }
+        anim.SetBool("isAiming", true);
+        anim.SetBool("isWalking", false);
+        anim.SetBool("isRunning", false);
         // 이후에 바라보는 방향에 맞춰 애니메이션 변화 필요
         transform.LookAt(new Vector3(mousePos.x, transform.position.y, mousePos.z));
         Attack();
 
-        if(Input.GetAxisRaw("Horizontal") == 1)
+        if (Input.GetAxisRaw("Horizontal") == 1)
         {
-            animator.SetBool("AimRight", true);
+            anim.SetBool("AimRight", true);
         }
-        else if(Input.GetAxisRaw("Horizontal") == -1)
+        else if (Input.GetAxisRaw("Horizontal") == -1)
         {
-            animator.SetBool("AimLeft", true);
+            anim.SetBool("AimLeft", true);
         }
-        else if(Input.GetAxisRaw("Horizontal") == 0)
+        else if (Input.GetAxisRaw("Horizontal") == 0)
         {
-            animator.SetBool("AimRight", false);
-            animator.SetBool("AimLeft", false);
+            anim.SetBool("AimRight", false);
+            anim.SetBool("AimLeft", false);
         }
-        
+
         if (Input.GetAxisRaw("Vertical") == 1)
         {
-            animator.SetBool("AimForward", true);
+            anim.SetBool("AimForward", true);
         }
         else if (Input.GetAxisRaw("Vertical") == -1)
         {
-            animator.SetBool("AimBack", true);
+            anim.SetBool("AimBack", true);
         }
         else if (Input.GetAxisRaw("Vertical") == 0)
         {
-            animator.SetBool("AimForward", false);
-            animator.SetBool("AimBack", false);
+            anim.SetBool("AimForward", false);
+            anim.SetBool("AimBack", false);
         }
 
         if (Input.GetKey(KeyCode.LeftShift))
         {
             curState = State.run;
         }
-        if(Input.GetMouseButtonUp(1))
+        if (Input.GetMouseButtonUp(1))
         {
-            animator.SetBool("AimRight", false);
-            animator.SetBool("AimLeft", false);
-            animator.SetBool("AimForward", false);
-            animator.SetBool("AimBack", false);
-            animator.SetBool("isAiming", false);
+            anim.SetBool("AimRight", false);
+            anim.SetBool("AimLeft", false);
+            anim.SetBool("AimForward", false);
+            anim.SetBool("AimBack", false);
+            anim.SetBool("isAiming", false);
             curState = pastState;
         }
     }
@@ -293,9 +302,21 @@ public class PlayerController : MonoBehaviour
     void AimMove()
     {
         curSpeedType = aimSpeed;
-        if(animator.GetBool("isAttack") == true)
+        if (anim.GetBool("isAttack") == true)
         {
             rigid.MovePosition(transform.position + dir * curSpeedType * Time.deltaTime);
+        }
+    }
+
+    void Die()
+    {
+        if(!isDie)
+        {
+            // 피격 시 땅이외에는 충돌하지 않게 설정
+            gameObject.layer = 10;
+            // 죽음 애니메이션 시작
+            anim.SetTrigger("Die");
+            isDie = true;
         }
     }
 }

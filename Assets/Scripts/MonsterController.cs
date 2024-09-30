@@ -13,6 +13,7 @@ public class MonsterController : MonoBehaviour
     [SerializeField] GameObject melee;
     [SerializeField] Animator anim;
     [SerializeField] BoxCollider attackArea;
+    Coroutine attackCoroutine;
     [Header("SFX")]
 
 
@@ -43,8 +44,7 @@ public class MonsterController : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log($"{isDamaged} 피격");
-        Debug.Log($"{isAttack} 공격");
+        Debug.Log(attackArea.gameObject.activeSelf);
         switch (curState)
         {
             case State.idle:
@@ -119,7 +119,7 @@ public class MonsterController : MonoBehaviour
         {
             curState = State.idle;
         }
-        else if (Vector3.Distance(transform.position, target.transform.position) <= data.AttackRange)
+        else if (Vector3.Distance(transform.position, target.transform.position) <= data.AttackRange - 0.1f)
         {
             curState = State.attack;
         }
@@ -132,23 +132,27 @@ public class MonsterController : MonoBehaviour
 
     void Attack()
     {
-        if (Vector3.Distance(transform.position, target.transform.position) > data.AttackRange)
+        anim.SetFloat("speed", 0);
+        if (Vector3.Distance(transform.position, target.transform.position) <= data.AttackRange)
         {
-            curState = State.trace;
-        }
-        else if (Vector3.Distance(transform.position, target.transform.position) <= data.AttackRange)
-        {
-            if (isAttack == false && isDamaged == false)
+            nav.SetDestination(transform.position);
+            
+            // 몬스터가 공격 대기시간이 아니고 피격 당한상태가 아닐 경우 공격
+            if (isDamaged)
             {
-                StartCoroutine(AttackCoroutine());
-                // 공격 범위 시작
-                attackArea.enabled = true;
+                // 공격당한 상태일 경우 패스
+                return;
             }
-            else if (isDamaged)
+            else if (isAttack == false && isDamaged == false)
             {
-                // 공격 범위 삭제
+                
+                attackCoroutine = StartCoroutine(AttackCoroutine());
                 attackArea.enabled = false;
             }
+        }
+        if (Vector3.Distance(transform.position, target.transform.position) > data.AttackRange + 0.1f)
+        {
+            curState = State.trace;
         }
         if (curHp <= 0)
         {
@@ -159,22 +163,20 @@ public class MonsterController : MonoBehaviour
 
     IEnumerator AttackCoroutine()
     {
-        // 공격 모션 시작
-        anim.SetBool("isAttack", true);
-        yield return new WaitForSeconds(1f);
         // 공격 재사용 대기 시간 시작
         isAttack = true;
-        
-
-        yield return new WaitForSeconds(0.2f);
+        // 공격 모션 시작
+        anim.SetBool("isAttack", true);
+        yield return new WaitForSeconds(1.1f);
+        // 공격 범위 생성
+        attackArea.enabled = true;
+        yield return new WaitForSeconds(0.1f);
+        attackArea.enabled = false;
         // 애니메이션 끝
         anim.SetBool("isAttack", false);
-        
-        yield return new WaitForSeconds(1f);
-
+        yield return new WaitForSeconds(2f);
         // 공격 재사용 대기 시간 끝
         isAttack = false;
-        yield return new WaitForSeconds(3f);
 
         yield break;
     }
