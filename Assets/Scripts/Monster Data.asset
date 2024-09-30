@@ -15,5 +15,6 @@ MonoBehaviour:
   name: NormalMonster
   hp: 20
   dmg: 3
+  speed: 2.5
   detectDist: 30
-  attackRange: 3
+  attackRange: 1.5

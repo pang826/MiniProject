@@ -8,6 +8,7 @@ TagManager:
   - Weapon
   - Cloth
   - Melee
+  - SoundManager
   layers:
   - Default
   - TransparentFX

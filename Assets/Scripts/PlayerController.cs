@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] MeshRenderer[] meshs;
     [SerializeField] Material[] materials;
     [SerializeField] Melee melee;
+    [SerializeField] AudioSource monsterAttack;
 
     [SerializeField] float curSpeedType;
     [SerializeField] float moveSpeed = 5f;   // 기본 움직임 속도
@@ -89,13 +90,11 @@ public class PlayerController : MonoBehaviour
     // 피격
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.collider.tag == "Monster")
+        MonsterController monster = collision.collider.GetComponent<MonsterController>();
+        if (collision.collider == monster.GetComponent<BoxCollider>())
         {
-            MonsterController monster = collision.collider.GetComponent<MonsterController>();
-            
             if (!isDamaged && monster.curState != MonsterController.State.die)
             {
-                Debug.Log(collision.gameObject.name);
                 Debug.Log(hp);
                 hp -= monster.data.Dmg;
                 StartCoroutine(OnDamage());
@@ -109,6 +108,7 @@ public class PlayerController : MonoBehaviour
         WaitForSeconds delay = new WaitForSeconds(1f);
 
         isDamaged = true;
+        SoundManager.Instance.PlaySFX(monsterAttack);
         foreach(MeshRenderer mesh in meshs)
         {
             mesh.material.color = Color.red;

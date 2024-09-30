@@ -1,5 +1,4 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -12,25 +11,26 @@ public class MonsterController : MonoBehaviour
     [SerializeField] NavMeshAgent nav;
     [SerializeField] MeshRenderer[] meshs;
     [SerializeField] GameObject melee;
+    [SerializeField] Animator anim;
+    [SerializeField] BoxCollider attackArea;
+    [Header("SFX")]
+
 
     [Header("속성")]
     [SerializeField] Rigidbody rigid;
     [SerializeField] int curHp;
-    //public int dmg;
-    //[SerializeField] float detectDist;
-    //[SerializeField] float attackRange;
-    //[SerializeField] float speed;
     bool isDamaged;
+    bool isAttack;
     private void Awake()
     {
-        //speed = 5f;
-        //dmg = 3;
-        //detectDist = 30;
-        //attackRange = 3;
         isDamaged = false;
+        isAttack = false;
         rigid = GetComponent<Rigidbody>();
         nav = GetComponent<NavMeshAgent>();
         meshs = GetComponentsInChildren<MeshRenderer>();
+        anim = GetComponent<Animator>();
+        attackArea = GetComponent<BoxCollider>();
+        attackArea.enabled = false;
         curState = State.idle;
     }
     private void Start()
@@ -39,11 +39,12 @@ public class MonsterController : MonoBehaviour
         nav.speed = data.Speed;
         target = GameObject.FindGameObjectWithTag("Player");
         melee = GameObject.FindGameObjectWithTag("Melee");
-        
     }
 
     private void Update()
     {
+        Debug.Log($"{isDamaged} 피격");
+        Debug.Log($"{isAttack} 공격");
         switch (curState)
         {
             case State.idle:
@@ -63,15 +64,15 @@ public class MonsterController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.tag == "Melee")
+        if (other.tag == "Melee")
         {
             Melee meleee = melee.GetComponent<Melee>();
-            if(!isDamaged)
+            if (!isDamaged)
             {
                 curHp -= meleee.dmg;
                 StartCoroutine(OnDamage());
             }
-            if(isDamaged)
+            if (isDamaged)
             {
                 // 경직
                 nav.SetDestination(transform.position);
@@ -82,86 +83,116 @@ public class MonsterController : MonoBehaviour
     {
         // 무적시간 시작(데미지를 받았는지에 대한 여부)
         isDamaged = true;
-        // 매터리얼 색상 변화
-        foreach (MeshRenderer mesh in meshs)
-        {
-            mesh.material.color = Color.red;
-        }
+        // 피격 애니메이션 시작
+        anim.SetBool("isDamage", true);
         // 무적시간
+        yield return new WaitForSeconds(0.1f);
+
+        // 피격 애니메이션 끝
+        anim.SetBool("isDamage", false);
         yield return new WaitForSeconds(0.5f);
-        // 매터리얼 색상 복구
-        foreach (MeshRenderer mesh in meshs)
-        {
-            mesh.material.color = Color.white;
-        }
         // 무적시간 끝
         isDamaged = false;
-        // 재추적
-        yield return new WaitForSeconds(1f);
         yield break;
     }
     void Idle()
     {
+        anim.SetFloat("speed", 0);
         nav.SetDestination(transform.position);
-        
+
         if (Vector3.Distance(transform.position, target.transform.position) <= data.DetectDist)
         {
             curState = State.trace;
         }
         if (curHp <= 0)
         {
+            StartCoroutine("DeathAnim");
             curState = State.die;
         }
     }
 
     void Trace()
     {
+        anim.SetFloat("speed", data.Speed);
         nav.SetDestination(target.transform.position);
-        if(Vector3.Distance(transform.position, target.transform.position) >= data.DetectDist + 5)
+        if (Vector3.Distance(transform.position, target.transform.position) >= data.DetectDist + 5)
         {
             curState = State.idle;
         }
-        else if(Vector3.Distance(transform.position,target.transform.position) <= data.AttackRange)
+        else if (Vector3.Distance(transform.position, target.transform.position) <= data.AttackRange)
         {
             curState = State.attack;
         }
         if (curHp <= 0)
         {
+            StartCoroutine("DeathAnim");
             curState = State.die;
         }
     }
 
     void Attack()
     {
-        if(Vector3.Distance(transform.position, target.transform.position) > data.AttackRange)
+        if (Vector3.Distance(transform.position, target.transform.position) > data.AttackRange)
         {
             curState = State.trace;
         }
-        else
+        else if (Vector3.Distance(transform.position, target.transform.position) <= data.AttackRange)
         {
-            StartCoroutine(AttackCoroutine());
+            if (isAttack == false && isDamaged == false)
+            {
+                StartCoroutine(AttackCoroutine());
+                // 공격 범위 시작
+                attackArea.enabled = true;
+            }
+            else if (isDamaged)
+            {
+                // 공격 범위 삭제
+                attackArea.enabled = false;
+            }
         }
         if (curHp <= 0)
         {
+            StartCoroutine("DeathAnim");
             curState = State.die;
         }
     }
 
     IEnumerator AttackCoroutine()
     {
-        yield return null;
+        // 공격 모션 시작
+        anim.SetBool("isAttack", true);
+        yield return new WaitForSeconds(1f);
+        // 공격 재사용 대기 시간 시작
+        isAttack = true;
+        
+
+        yield return new WaitForSeconds(0.2f);
+        // 애니메이션 끝
+        anim.SetBool("isAttack", false);
+        
+        yield return new WaitForSeconds(1f);
+
+        // 공격 재사용 대기 시간 끝
+        isAttack = false;
+        yield return new WaitForSeconds(3f);
+
+        yield break;
     }
 
     void DIe()
     {
+        // 위치고정
         nav.SetDestination(transform.position);
-        foreach (MeshRenderer mesh in meshs)
-        {
-            mesh.material.color = Color.black;
-            // 3초후 삭제
-            Destroy(gameObject, 3);
-            // 피격 시 땅이외에는 충돌하지 않게 설정
-            gameObject.layer = 9;
-        }
+    }
+
+    IEnumerator DeathAnim()
+    {
+        // 피격 시 땅이외에는 충돌하지 않게 설정
+        gameObject.layer = 9;
+        // 죽음 애니메이션 시작
+        anim.SetTrigger("death");
+        // 5초후 삭제
+        Destroy(gameObject, 5);
+        yield break;
     }
 }
