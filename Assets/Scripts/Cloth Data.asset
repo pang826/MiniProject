@@ -9,12 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 19d4bd5b01ce55d4291b5b449e103ab3, type: 3}
-  m_Name: Monster Data
+  m_Script: {fileID: 11500000, guid: 9fd8a2e26f0ba4b4a95f7ab06ed224da, type: 3}
+  m_Name: Cloth Data
   m_EditorClassIdentifier: 
-  name: NormalMonster
-  hp: 20
-  dmg: 3
-  speed: 2.5
-  detectDist: 30
-  attackRange: 1.5
+  name: Cloth
+  weight: 0.1
+  type: 2

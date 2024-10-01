@@ -15,11 +15,13 @@ public class MonsterController : MonoBehaviour
     [SerializeField] BoxCollider attackArea;
     Coroutine attackCoroutine;
     [Header("SFX")]
-
+    [SerializeField] AudioSource damageSFX;
 
     [Header("속성")]
     [SerializeField] Rigidbody rigid;
     [SerializeField] int curHp;
+    Vector3 spawnPoint;
+    bool canMove;
     bool isDamaged;
     bool isAttack;
     private void Awake()
@@ -31,8 +33,11 @@ public class MonsterController : MonoBehaviour
         meshs = GetComponentsInChildren<MeshRenderer>();
         anim = GetComponent<Animator>();
         attackArea = GetComponent<BoxCollider>();
+        damageSFX = GetComponent<AudioSource>();
+        canMove = true;
         attackArea.enabled = false;
         curState = State.idle;
+        spawnPoint = transform.position;
     }
     private void Start()
     {
@@ -44,21 +49,30 @@ public class MonsterController : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log(attackArea.gameObject.activeSelf);
-        switch (curState)
+        if(target.gameObject.layer == 10)
         {
-            case State.idle:
-                Idle();
-                break;
-            case State.trace:
-                Trace();
-                break;
-            case State.attack:
-                Attack();
-                break;
-            case State.die:
-                DIe();
-                break;
+            target = null;
+            nav.SetDestination(spawnPoint);
+            nav.speed = 0.5f;
+            anim.SetFloat("speed", data.Speed);
+        }
+        else
+        {
+            switch (curState)
+            {
+                case State.idle:
+                    Idle();
+                    break;
+                case State.trace:
+                    Trace();
+                    break;
+                case State.attack:
+                    Attack();
+                    break;
+                case State.die:
+                    DIe();
+                    break;
+            }
         }
     }
 
@@ -83,9 +97,10 @@ public class MonsterController : MonoBehaviour
     {
         // 무적시간 시작(데미지를 받았는지에 대한 여부)
         isDamaged = true;
+        canMove = false;
         // 피격 애니메이션 시작
         anim.SetBool("isDamage", true);
-        // 무적시간
+        SoundManager.Instance.PlaySFX(damageSFX);
         yield return new WaitForSeconds(0.1f);
 
         // 피격 애니메이션 끝
@@ -93,6 +108,7 @@ public class MonsterController : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         // 무적시간 끝
         isDamaged = false;
+        canMove = true;
         yield break;
     }
     void Idle()
@@ -114,7 +130,11 @@ public class MonsterController : MonoBehaviour
     void Trace()
     {
         anim.SetFloat("speed", data.Speed);
-        nav.SetDestination(target.transform.position);
+        if(canMove)
+        {
+            nav.SetDestination(target.transform.position);
+        }
+        
         if (Vector3.Distance(transform.position, target.transform.position) >= data.DetectDist + 5)
         {
             curState = State.idle;
@@ -143,7 +163,7 @@ public class MonsterController : MonoBehaviour
                 // 공격당한 상태일 경우 패스
                 return;
             }
-            else if (isAttack == false && isDamaged == false)
+            else if (isAttack == false && isDamaged == false && canMove)
             {
                 
                 attackCoroutine = StartCoroutine(AttackCoroutine());
@@ -165,6 +185,7 @@ public class MonsterController : MonoBehaviour
     {
         // 공격 재사용 대기 시간 시작
         isAttack = true;
+        canMove = false;
         // 공격 모션 시작
         anim.SetBool("isAttack", true);
         yield return new WaitForSeconds(1.1f);
@@ -177,6 +198,7 @@ public class MonsterController : MonoBehaviour
         yield return new WaitForSeconds(2f);
         // 공격 재사용 대기 시간 끝
         isAttack = false;
+        canMove = true;
 
         yield break;
     }

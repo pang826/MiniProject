@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class PlayerController : MonoBehaviour
 {
@@ -17,7 +18,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] MeshRenderer[] meshs;
     [SerializeField] Material[] materials;
     [SerializeField] Melee melee;
-    [SerializeField] AudioSource monsterAttack;
+
+    [Header("SFX")]
+    [SerializeField] AudioSource attackSFX;
+    [SerializeField] AudioSource dieSFX;
 
     [SerializeField] float curSpeedType;
     [SerializeField] float moveSpeed = 5f;   // 기본 움직임 속도
@@ -27,16 +31,18 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float attackDelay;      // 다시 공격하는데 걸리는 시간
 
     [SerializeField] int hp;
+    bool canMove;   // 움직임 가능 여부
     bool isDamaged; // 피격 여부
     bool isAttack;  // 공격 여부
     bool isDie;     // 사망 여부
     private void Awake()
     {
-        hp = 3;
+        hp = 15;
         rigid = GetComponent<Rigidbody>();
         meshs = GetComponentsInChildren<MeshRenderer>();
         anim = GetComponent<Animator>();
         melee = GetComponentInChildren<Melee>();
+        canMove = true;
         isDamaged = false;
         isAttack = false;
         isDie = false;
@@ -47,6 +53,7 @@ public class PlayerController : MonoBehaviour
     {
 
         InputMoveKey();
+        // 이전 상태를 담아두는 변수(조준상태에서 이전상태로 돌아가기 위함)
         if (pastState != curState && curState != State.aim)
         {
             pastState = curState;
@@ -75,17 +82,20 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        switch (curState)
+        if (canMove)
         {
-            case State.walk:
-                WalkMove();
-                break;
-            case State.run:
-                RunMove();
-                break;
-            case State.aim:
-                AimMove();
-                break;
+            switch (curState)
+            {
+                case State.walk:
+                    WalkMove();
+                    break;
+                case State.run:
+                    RunMove();
+                    break;
+                case State.aim:
+                    AimMove();
+                    break;
+            }
         }
     }
 
@@ -104,14 +114,12 @@ public class PlayerController : MonoBehaviour
     // 피격 무적시간
     IEnumerator OnDamage()
     {
-        SoundManager.Instance.PlaySFX(monsterAttack);
-        yield return new WaitForSeconds(0.2f);
         isDamaged = true;
         anim.SetBool("isDamaged", true);
         
         yield return new WaitForSeconds(0.1f);
         anim.SetBool("isDamaged", false);
-        yield return new WaitForSeconds(0.7f);
+        yield return new WaitForSeconds(0.9f);
         
         isDamaged = false;
         yield break;
@@ -119,9 +127,12 @@ public class PlayerController : MonoBehaviour
 
     IEnumerator AttackMotion()
     {
+        canMove = false;
         anim.SetBool("isAttack", false);
         yield return new WaitForSeconds(1f);
+        
         anim.SetBool("isAttack", true);
+        canMove = true;
         StopCoroutine("AttackMotion");
     }
     void Attack()
@@ -136,7 +147,9 @@ public class PlayerController : MonoBehaviour
             melee.Attack();
             attackDelay = 0f;
             isAttack = true;
-            StartCoroutine("AttackMotion");
+
+            SoundManager.Instance.PlaySFX(attackSFX);
+            StartCoroutine(AttackMotion());
         }
     }
     // 키 입력받기
@@ -166,7 +179,7 @@ public class PlayerController : MonoBehaviour
         {
             curState = State.walk;
         }
-        else if (Input.GetMouseButton(1))
+        else if (Input.GetMouseButton(1) && EventSystem.current.IsPointerOverGameObject() == false)
         {
             curState = State.aim;
         }
@@ -191,7 +204,7 @@ public class PlayerController : MonoBehaviour
         {
             curState = State.run;
         }
-        else if (Input.GetMouseButton(1))
+        else if (Input.GetMouseButton(1) && EventSystem.current.IsPointerOverGameObject() == false)
         {
             curState = State.aim;
         }
@@ -316,6 +329,7 @@ public class PlayerController : MonoBehaviour
             gameObject.layer = 10;
             // 죽음 애니메이션 시작
             anim.SetTrigger("Die");
+            SoundManager.Instance.PlaySFX(dieSFX);
             isDie = true;
         }
     }

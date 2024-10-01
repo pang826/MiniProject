@@ -9,4 +9,10 @@ public class SceneChanger : MonoBehaviour
     {
         SceneManager.LoadScene(1);
     }
+
+    public void ExitGame()
+    {
+        Debug.Log("게임종료");
+        Application.Quit();
+    }
 }

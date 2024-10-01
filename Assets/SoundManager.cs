@@ -28,11 +28,6 @@ public class SoundManager : MonoBehaviour
         audioSource.PlayOneShot(audioSource.clip);
     }
 
-    //public void StopSFX(AudioSource audioSource) 
-    //{ 
-    //    if(audioSource.isPlaying)
-    //    audioSource.Stop();
-    //}
     public void PlayTitleBgm()
     {
         titleSceneBgm.Play();
