@@ -9,6 +9,7 @@ TagManager:
   - Cloth
   - Melee
   - SoundManager
+  - ItemSpot
   layers:
   - Default
   - TransparentFX
