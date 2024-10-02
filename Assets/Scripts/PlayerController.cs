@@ -134,6 +134,10 @@ public class PlayerController : MonoBehaviour
             Debug.Log(hp);
             StartCoroutine(OnDamage());
         }
+        else
+        {
+            return;
+        }
     }
 
     // 피격 무적시간

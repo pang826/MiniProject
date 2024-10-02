@@ -21,7 +21,7 @@ public class Cloth : MonoBehaviour
     // 근처에 플레이어가 다가왔을 때
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Player")
+        if (other.tag == "Player" && itemTmp == null)
         {
             itemTmp = itemSpot.AddComponent<TextMeshProUGUI>();
         }
@@ -37,7 +37,7 @@ public class Cloth : MonoBehaviour
     // 플레이어가 근처에서 멀어졌을 때
     private void OnTriggerExit(Collider other)
     {
-        if (other.tag == "Player")
+        if (other.tag == "Player" && itemTmp != null)
         {
             Destroy(itemTmp);
         }

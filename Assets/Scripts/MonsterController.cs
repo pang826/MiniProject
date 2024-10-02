@@ -130,12 +130,12 @@ public class MonsterController : MonoBehaviour
     void Trace()
     {
         anim.SetFloat("speed", data.Speed);
-        if(canMove)
+        if(canMove && target != null)
         {
             nav.SetDestination(target.transform.position);
         }
         
-        if (Vector3.Distance(transform.position, target.transform.position) >= data.DetectDist + 5)
+        if (Vector3.Distance(transform.position, target.transform.position) >= data.DetectDist + 5 )
         {
             curState = State.idle;
         }
