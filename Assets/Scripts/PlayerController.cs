@@ -4,32 +4,34 @@ using UnityEngine.EventSystems;
 
 public class PlayerController : MonoBehaviour
 {
-    enum State { idle, walk, run, aim, die }
-    State curState;
+    public enum State { idle, walk, run, aim, die }
+    public State curState;
     State pastState;
 
     Vector3 dir;
     Vector3 mouseDir;
     Vector3 mousePos;
 
-    [Header("속성")]
+    [Header("참조")]
     [SerializeField] Animator anim;
     [SerializeField] Rigidbody rigid;
     [SerializeField] MeshRenderer[] meshs;
     [SerializeField] Material[] materials;
     [SerializeField] Melee melee;
+    [SerializeField] GameObject inGameUi;
+    [SerializeField] GameObject dieUi;
 
     [Header("SFX")]
     [SerializeField] AudioSource attackSFX;
     [SerializeField] AudioSource dieSFX;
 
+    [Header("속성")]
     [SerializeField] float curSpeedType;
     [SerializeField] float moveSpeed = 5f;   // 기본 움직임 속도
     [SerializeField] float runSpeed = 8f;    // 질주 속도
     [SerializeField] float aimSpeed = 2.5f;  // 조준시 움직임 속도
     [SerializeField] float turnSpeed = 360f;
     [SerializeField] float attackDelay;      // 다시 공격하는데 걸리는 시간
-
     [SerializeField] int hp;
     bool canMove;   // 움직임 가능 여부
     bool isDamaged; // 피격 여부
@@ -48,7 +50,13 @@ public class PlayerController : MonoBehaviour
         isDie = false;
         anim.SetBool("isAttack", true);
     }
-
+    private void Start()
+    {
+        inGameUi = GameObject.FindGameObjectWithTag("InGameUi");
+        
+        dieUi = GameObject.FindGameObjectWithTag("DieUi");
+        dieUi.SetActive(false);
+    }
     private void Update()
     {
 
@@ -125,6 +133,7 @@ public class PlayerController : MonoBehaviour
         yield break;
     }
 
+    // 공격 모션
     IEnumerator AttackMotion()
     {
         canMove = false;
@@ -135,6 +144,8 @@ public class PlayerController : MonoBehaviour
         canMove = true;
         StopCoroutine("AttackMotion");
     }
+
+    // 공격
     void Attack()
     {
         attackDelay += Time.deltaTime;
@@ -327,9 +338,22 @@ public class PlayerController : MonoBehaviour
         {
             // 피격 시 땅이외에는 충돌하지 않게 설정
             gameObject.layer = 10;
+            // 우클릭 누른상태로 사망시 우클릭으로 할 수 애니메이션 취소
+            anim.SetBool("isAiming", false);
+            anim.SetBool("AimRight", false);
+            anim.SetBool("AimLeft", false);
+            anim.SetBool("AimForward", false);
+            anim.SetBool("AimBack", false);
             // 죽음 애니메이션 시작
             anim.SetTrigger("Die");
+            // BGM 조작
             SoundManager.Instance.PlaySFX(dieSFX);
+            SoundManager.Instance.StopGameBgm();
+            SoundManager.Instance.PlayDieBgm();
+            // InGameUI 끄기
+            inGameUi.SetActive(false);
+            dieUi.SetActive(true);
+            // 죽음상태 ON
             isDie = true;
         }
     }

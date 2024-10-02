@@ -10,6 +10,8 @@ TagManager:
   - Melee
   - SoundManager
   - ItemSpot
+  - InGameUi
+  - DieUi
   layers:
   - Default
   - TransparentFX

@@ -211,7 +211,7 @@ public class MonsterController : MonoBehaviour
 
     IEnumerator DeathAnim()
     {
-        // 피격 시 땅이외에는 충돌하지 않게 설정
+        // 사망 시 땅이외에는 충돌하지 않게 설정
         gameObject.layer = 9;
         // 죽음 애니메이션 시작
         anim.SetTrigger("death");

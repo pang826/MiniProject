@@ -8,5 +8,12 @@ public class BGMSpeaker : MonoBehaviour
     {
         SoundManager.Instance.StopTitleBgm();
         SoundManager.Instance.PlayGameBgm();
+        SoundManager.Instance.StopDieBgm();
+    }
+
+    private void OnDisable()
+    {
+        SoundManager.Instance.PlayTitleBgm();
+        SoundManager.Instance.StopDieBgm();
     }
 }

@@ -9,6 +9,7 @@ public class SoundManager : MonoBehaviour
     [Header("BGM")]
     public AudioSource titleSceneBgm;
     public AudioSource gameSceneBgm;
+    public AudioSource dieBgm;
 
     private void Awake()
     {
@@ -51,6 +52,19 @@ public class SoundManager : MonoBehaviour
         if(gameSceneBgm.isPlaying)
         {
             gameSceneBgm.Stop();
+        }
+    }
+
+    public void PlayDieBgm()
+    {
+        dieBgm.Play();
+    }
+
+    public void StopDieBgm()
+    {
+        if (dieBgm.isPlaying)
+        {
+            dieBgm.Stop();
         }
     }
 }

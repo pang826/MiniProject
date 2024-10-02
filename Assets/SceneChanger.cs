@@ -5,9 +5,29 @@ using UnityEngine.SceneManagement;
 
 public class SceneChanger : MonoBehaviour
 {
-    public void SceneChange()
+    private static SceneChanger instance;
+    public static SceneChanger Instance {  get { return instance; } }
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(instance);
+        }
+        DontDestroyOnLoad(gameObject);
+    }
+    public void SceneChange_TitleScene()
+    {
+        SceneManager.LoadScene(0);
+        Debug.Log("≈∏¿Ã∆≤æ¿");
+    }
+    public void SceneChange_GameScene()
     {
         SceneManager.LoadScene(1);
+        Debug.Log("∞‘¿”æ¿");
     }
 
     public void ExitGame()
