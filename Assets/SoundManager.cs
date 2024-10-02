@@ -19,9 +19,9 @@ public class SoundManager : MonoBehaviour
         }
         else
         {
-            Destroy(instance);
+            Destroy(gameObject);
         }
-        DontDestroyOnLoad(instance);
+        DontDestroyOnLoad(gameObject);
     }
 
     public void PlaySFX(AudioSource audioSource)

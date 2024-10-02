@@ -12,6 +12,7 @@ TagManager:
   - ItemSpot
   - InGameUi
   - DieUi
+  - SceneChanger
   layers:
   - Default
   - TransparentFX

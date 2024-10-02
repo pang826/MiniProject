@@ -5,20 +5,6 @@ using UnityEngine.SceneManagement;
 
 public class SceneChanger : MonoBehaviour
 {
-    private static SceneChanger instance;
-    public static SceneChanger Instance {  get { return instance; } }
-    private void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-        }
-        else
-        {
-            Destroy(instance);
-        }
-        DontDestroyOnLoad(gameObject);
-    }
     public void SceneChange_TitleScene()
     {
         SceneManager.LoadScene(0);

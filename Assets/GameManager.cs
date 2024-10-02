@@ -1,37 +1,23 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     private static GameManager instance;
-    public static  GameManager Instance { get { return instance; } }
-    [SerializeField] TextMeshProUGUI scoreBoard;
-    float time = 0;
-    [SerializeField] int score;
-
+    public static GameManager Instance { get { return instance; } }
     private void Awake()
     {
-        if(instance == null)
+        if (instance == null)
         {
             instance = this;
         }
         else
         {
-            Destroy(instance);
+            Destroy(gameObject);
         }
         DontDestroyOnLoad(gameObject);
     }
     
-    private void Update()
-    {
-        if(SceneManager.GetActiveScene().name == "GameScene")
-        {
-            time += Time.deltaTime;
-            score = (int)time;
-            scoreBoard.text = score.ToString();
-        }
-    }
 }

@@ -1,6 +1,8 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class PlayerController : MonoBehaviour
 {
@@ -20,6 +22,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] Melee melee;
     [SerializeField] GameObject inGameUi;
     [SerializeField] GameObject dieUi;
+    [SerializeField] TextMeshProUGUI curScoreBoard;
+    [SerializeField] TextMeshProUGUI finalScoreBoard;
 
     [Header("SFX")]
     [SerializeField] AudioSource attackSFX;
@@ -37,6 +41,8 @@ public class PlayerController : MonoBehaviour
     bool isDamaged; // 피격 여부
     bool isAttack;  // 공격 여부
     bool isDie;     // 사망 여부
+    float time;
+    int score;
     private void Awake()
     {
         hp = 15;
@@ -59,8 +65,19 @@ public class PlayerController : MonoBehaviour
     }
     private void Update()
     {
+        if(curState != State.die)
+        {
+            time += Time.deltaTime;
+            score = (int)time;
+            curScoreBoard.text = score.ToString();
+        }
+        if (curState == State.die)
+        {
+            score = (int)time;
+            finalScoreBoard.text = score.ToString();
+        }
 
-        InputMoveKey();
+            InputMoveKey();
         // 이전 상태를 담아두는 변수(조준상태에서 이전상태로 돌아가기 위함)
         if (pastState != curState && curState != State.aim)
         {
