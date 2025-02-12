@@ -1,0 +1,31 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class CheckAttackRangeInPlayer : Node
+{
+    private int playerLayer = 1 << 6;
+    private Transform player;
+    private Transform transform;
+    private Animator anim;
+    public CheckAttackRangeInPlayer(Transform player, Transform transform, Animator anim)
+    {
+        this.player = player;
+        this.transform = transform;
+        this.anim = anim;
+    }
+
+    public override E_NodeState Evaluate()
+    {
+        
+        Collider[] collider = Physics.OverlapSphere(transform.position, 1, playerLayer);
+        if (collider.Length >= 1)
+        {
+            anim.SetFloat("speed", 0);
+            return E_NodeState.Success;
+        }
+            
+
+        return curState = E_NodeState.Failure;
+    }
+}
