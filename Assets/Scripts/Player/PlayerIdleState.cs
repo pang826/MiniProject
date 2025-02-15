@@ -19,7 +19,15 @@ public class PlayerIdleState : IPlayerState
 
     public void OnUpdate()
     {
+        if(Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0)
+        {
+            controller.ChangeState(E_PlayerState.Walk);
+        }
 
+        if(Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            controller.ChangeState(E_PlayerState.Run);
+        }
     }
 
     public void OnExit() 
