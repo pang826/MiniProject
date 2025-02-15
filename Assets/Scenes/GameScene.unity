@@ -379,6 +379,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ZombieWoman
       objectReference: {fileID: 0}
+    - target: {fileID: 4559753794973355643, guid: 1fac08a6f91f133479fdf666b404a90a, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 5966405889217661669, guid: 1fac08a6f91f133479fdf666b404a90a, type: 3}
       propertyPath: m_RootOrder
       value: 4
@@ -510,6 +514,10 @@ PrefabInstance:
     - target: {fileID: 6536048565187290973, guid: 91c902c0dc96f3744acd0d9e89dbe7fa, type: 3}
       propertyPath: m_Name
       value: ZombieMan
+      objectReference: {fileID: 0}
+    - target: {fileID: 6536048565187290973, guid: 91c902c0dc96f3744acd0d9e89dbe7fa, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 7977559265335695775, guid: 91c902c0dc96f3744acd0d9e89dbe7fa, type: 3}
       propertyPath: anim
@@ -798,25 +806,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5b61ee933600e641b8b07ea6b4eb09d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  curState: 0
-  anim: {fileID: 0}
-  rigid: {fileID: 0}
-  meshs: []
-  materials: []
-  melee: {fileID: 0}
-  inGameUi: {fileID: 0}
-  dieUi: {fileID: 0}
-  curScoreBoard: {fileID: 681990432}
-  finalScoreBoard: {fileID: 1330620772}
-  attackSFX: {fileID: 273861388}
-  dieSFX: {fileID: 273861389}
-  curSpeedType: 0
-  moveSpeed: 2.5
-  runSpeed: 5
-  aimSpeed: 1.5
-  turnSpeed: 360
-  attackDelay: 0
-  hp: 0
+  CurState: 0
 --- !u!54 &273861384
 Rigidbody:
   m_ObjectHideFlags: 0
