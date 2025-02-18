@@ -14,7 +14,9 @@ public class ZombieBT : Tree
 
     [SerializeField] ZombieData zData;
 
-    private bool isDamaged;
+    public bool IsDamaged;
+
+    public bool IsAttack;
 
     private int hp;
 
@@ -34,17 +36,17 @@ public class ZombieBT : Tree
         Node root = new SelectorNode(new List<Node>
         {
             new DieNode(transform, anim, hp),
-            new DamagedNode(anim, isDamaged),
+            new DamagedNode(anim, this),
             new SequenceNode(new List<Node>
             {
-                new CheckAttackRangeInPlayer(player, transform, anim),
+                new CheckAttackRangeInPlayer(player, transform, anim, this),
                 new AttackPlayerNode(player, transform, anim, this)
             }),
             // TODO : 공격 노드 추가
             new SequenceNode(new List<Node>
             {
                 new CheckPlayerIsNearNode(transform, anim),
-                new ChasePlayerNode(player, transform, anim, speed)
+                new ChasePlayerNode(player, transform, anim, speed, IsAttack)
             })
         });
         return root;
@@ -57,16 +59,16 @@ public class ZombieBT : Tree
 
     IEnumerator AttackRoutine()
     {
-        yield return new WaitForSeconds(1.2f);
+        yield return new WaitForSeconds(0.7f);
         attackRangeCol.enabled = true;
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(0.1f);
         attackRangeCol.enabled = false;
         yield break;
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.collider.gameObject.GetComponent<PlayerController>() && isDamaged == false)
+        if(collision.collider.gameObject.GetComponent<PlayerController>() && IsDamaged == false)
         {
             StartCoroutine(DamagedRoutine());
         }
@@ -74,10 +76,10 @@ public class ZombieBT : Tree
 
     IEnumerator DamagedRoutine()
     {
-        isDamaged = true;
+        IsDamaged = true;
         hp -= 3;
         yield return new WaitForSeconds(0.2f);
-        isDamaged = false;
+        IsDamaged = false;
         yield break;
     }
 }

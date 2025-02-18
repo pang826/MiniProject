@@ -6,9 +6,8 @@ public class AttackPlayerNode : Node
 {
     private Transform player;
     private Transform transform;
-    private bool isAttack;
     private float curTime = 0f;
-    private float attackCooldown = 3f;
+    private float attackCooldown = 2f;
     private Animator anim;
     private ZombieBT bt;
 
@@ -22,30 +21,25 @@ public class AttackPlayerNode : Node
 
     public override E_NodeState Evaluate()
     {
-        float distance = Vector3.Distance(transform.position, player.position);
-        if (distance <= 1)
+        if (!bt.IsAttack)
         {
-            if (!isAttack)
-            {
-                isAttack = true;
-                curTime = 0f;
-                Attack();  // 공격 실행
-                return E_NodeState.Running;  // 공격 중 상태 유지
-            }
-        }
-
-        if (isAttack)
+            bt.IsAttack = true;
+            curTime = 0f;
+            Attack();  // 공격 실행
+            return curState = E_NodeState.Running;  // 공격 중 상태 유지
+        }      
+        
+        if (bt.IsAttack)
         {
             curTime += Time.deltaTime;
             if (curTime >= attackCooldown) // 쿨타임이 지나면 다시 공격 가능
             {
-                isAttack = false;
-                return E_NodeState.Success;
+                bt.IsAttack = false;
+                return curState = E_NodeState.Failure;
             }
-            return E_NodeState.Running;  // 쿨타임 대기 중
         }
-
-        return E_NodeState.Failure;
+        
+        return curState = E_NodeState.Running;
     }
 
     private void Attack()
@@ -53,6 +47,6 @@ public class AttackPlayerNode : Node
         Debug.Log("공격 실행!");
         // 실제 공격 로직 (애니메이션 재생, 데미지 적용 등) 추가 가능
         bt.StartAttackRoutine();
-        anim.SetTrigger("isAttack");
+        anim.SetTrigger("IsAttack");
     }
 }

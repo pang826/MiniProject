@@ -187,14 +187,14 @@ public class MonsterController : MonoBehaviour
         isAttack = true;
         canMove = false;
         // 공격 모션 시작
-        anim.SetBool("isAttack", true);
+        anim.SetBool("IsAttack", true);
         yield return new WaitForSeconds(1.1f);
         // 공격 범위 생성
         attackArea.enabled = true;
         yield return new WaitForSeconds(0.1f);
         attackArea.enabled = false;
         // 애니메이션 끝
-        anim.SetBool("isAttack", false);
+        anim.SetBool("IsAttack", false);
         yield return new WaitForSeconds(2f);
         // 공격 재사용 대기 시간 끝
         isAttack = false;

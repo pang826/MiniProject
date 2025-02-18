@@ -5,23 +5,23 @@ using UnityEngine;
 public class DamagedNode : Node
 {
     Animator anim;
-    bool isDamaged;
+    ZombieBT bt;
     bool isCheck;
-    public DamagedNode(Animator anim, bool isDamaged)
+    public DamagedNode(Animator anim, ZombieBT bt)
     {
         this.anim = anim;
-        this.isDamaged = isDamaged;
+        this.bt = bt;
     }
     public override E_NodeState Evaluate()
     {
-        if(isDamaged)
+        if(bt.IsDamaged)
         {
             anim.SetBool("isDamage", true);
             isCheck = true;
             return E_NodeState.Running;
         }
 
-        if(isDamaged == false && isCheck == true)
+        if(bt.IsDamaged == false && isCheck == true)
         {
             isCheck = false;
             anim.SetBool("isDamage", false);
