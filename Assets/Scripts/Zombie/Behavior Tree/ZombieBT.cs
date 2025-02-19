@@ -18,7 +18,8 @@ public class ZombieBT : Tree
 
     public bool IsAttack;
 
-    private int hp;
+    [SerializeField] private int hp;
+    public int Hp {  get { return hp; } }
 
     private float speed;
 
@@ -35,14 +36,13 @@ public class ZombieBT : Tree
     {
         Node root = new SelectorNode(new List<Node>
         {
-            new DieNode(transform, anim, hp),
+            new DieNode(transform, anim, this),
             new DamagedNode(anim, this),
             new SequenceNode(new List<Node>
             {
                 new CheckAttackRangeInPlayer(player, transform, anim, this),
                 new AttackPlayerNode(player, transform, anim, this)
             }),
-            // TODO : 공격 노드 추가
             new SequenceNode(new List<Node>
             {
                 new CheckPlayerIsNearNode(transform, anim),
@@ -68,7 +68,7 @@ public class ZombieBT : Tree
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.collider.gameObject.GetComponent<PlayerController>() && IsDamaged == false)
+        if(collision.collider.gameObject.GetComponent<PlayerController>() && IsDamaged == false && collision.collider is BoxCollider)
         {
             StartCoroutine(DamagedRoutine());
         }

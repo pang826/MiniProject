@@ -14,8 +14,6 @@ public class Melee : MonoBehaviour
     {
         dmg = 3;
         attackSpeed = 1f;
-        attackRange = GetComponent<BoxCollider>();
-        attackRange.enabled = false;
     }
     public void Attack()
     {

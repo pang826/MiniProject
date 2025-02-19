@@ -18,7 +18,7 @@ public class PlayerDamagedState : IPlayerState
     public void OnEnter()
     {
         controller.Hp -= 2;
-        anim.SetBool("isDamaged", true);
+        anim.SetTrigger("IsDamaged");
         curTime = 0;
     }
 
@@ -34,6 +34,5 @@ public class PlayerDamagedState : IPlayerState
 
     public void OnExit()
     {
-        anim.SetBool("isDamaged", false);
     }
 }

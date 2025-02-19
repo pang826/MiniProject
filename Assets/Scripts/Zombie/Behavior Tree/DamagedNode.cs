@@ -17,13 +17,11 @@ public class DamagedNode : Node
         if(bt.IsDamaged)
         {
             anim.SetBool("isDamage", true);
-            isCheck = true;
             return E_NodeState.Running;
         }
 
-        if(bt.IsDamaged == false && isCheck == true)
+        if(bt.IsDamaged == false)
         {
-            isCheck = false;
             anim.SetBool("isDamage", false);
         }
         return curState = E_NodeState.Failure;

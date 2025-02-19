@@ -32,8 +32,6 @@ public class PlayerRunState : IPlayerState
             controller.transform.rotation = Quaternion.RotateTowards(controller.transform.rotation, lookRotation, 360 * Time.deltaTime);
         }
 
-        rigid.MovePosition(controller.transform.position + (controller.transform.forward * dir.sqrMagnitude).normalized * Time.deltaTime * speed);
-
         if (Input.GetAxisRaw("Horizontal") == 0 && Input.GetAxisRaw("Vertical") == 0)
         {
             controller.ChangeState(E_PlayerState.Idle);
@@ -45,6 +43,10 @@ public class PlayerRunState : IPlayerState
         }
     }
 
+    public void OnFixedUpdate()
+    {
+        rigid.MovePosition(controller.transform.position + (controller.transform.forward * dir.sqrMagnitude).normalized * Time.deltaTime * speed);
+    }
     public void OnExit()
     {
         anim.SetBool("isRunning", false);

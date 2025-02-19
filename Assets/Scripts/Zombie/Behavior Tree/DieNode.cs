@@ -8,25 +8,19 @@ public class DieNode : Node
 
     private Animator anim;
 
-    private int hp;
+    private ZombieBT bt;
 
     private bool isDieAnimPlay;
-    public DieNode(Transform transform, Animator anim, int hp)
+    public DieNode(Transform transform, Animator anim, ZombieBT bt)
     {
         this.transform = transform;
         this.anim = anim;
-        this.hp = hp;
+        this.bt = bt;
     }
 
     public override E_NodeState Evaluate()
     {
-        //if( 체력이 0이라면 success)
-        if(Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            hp -= 3;
-        }
-
-        if(hp <= 0)
+        if(bt.Hp <= 0)
         {
             if(isDieAnimPlay == false)
             {
