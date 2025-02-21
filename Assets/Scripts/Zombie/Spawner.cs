@@ -14,8 +14,6 @@ public class Spawner : MonoBehaviour
 
     private int stage;
 
-    private bool isSpawn;
-
     private void Start()
     {
         spawnPoint[0] = spawnPoints[0].position;
@@ -24,37 +22,37 @@ public class Spawner : MonoBehaviour
         spawnPoint[3] = spawnPoints[3].position;
         GameManager.Instance.OnChangeState += Spawn;
         stage = GameManager.Instance.Stage;
+        Spawn();
     }
 
     private void Update()
     {
-        if(SceneManager.GetActiveScene().buildIndex == stage && isSpawn == false)
-        {
-            Spawn();
-        }
     }
 
     private void Spawn()
     {
         StartCoroutine(SpawnRoutine());
     }
+    
+
     IEnumerator SpawnRoutine()
     {
-        if (isSpawn == true)
-            yield break;
-        isSpawn = true;
         float curTime = 0f;
-        while (true)
+        int repeatCount = GameManager.Instance.Cycle;
+        int curRepeatCount = 0;
+        while(true)
         {
             curTime += Time.deltaTime;
-            if (curTime >= 3f)
+            if(curTime >= GameManager.Instance.Interval && curRepeatCount < repeatCount)
             {
+                curTime = 0f;
+                curRepeatCount++;
                 GameObject.Instantiate(man, spawnPoint[0], Quaternion.identity);
                 GameObject.Instantiate(woman, spawnPoint[1], Quaternion.identity);
-                curTime = 0f;
-                yield break;
             }
+            else if(curRepeatCount >= repeatCount) { yield break; }
             yield return null;
         }
+        
     }
 }

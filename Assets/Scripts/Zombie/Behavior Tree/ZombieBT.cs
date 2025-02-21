@@ -32,6 +32,10 @@ public class ZombieBT : Tree
         dmg = zData.Dmg;
     }
 
+    private void Start()
+    {
+        player = GameObject.FindGameObjectWithTag("Player").transform;
+    }
     protected override Node SetUpBehaviorTree()
     {
         Node root = new SelectorNode(new List<Node>
@@ -81,5 +85,13 @@ public class ZombieBT : Tree
         yield return new WaitForSeconds(0.2f);
         IsDamaged = false;
         yield break;
+    }
+
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            hp -= 3;
+        }
     }
 }
