@@ -16,6 +16,7 @@ public abstract class Tree : MonoBehaviour
     {
         if (rootNode is null)
             return;
+            
         rootNode.Evaluate();
     }
 

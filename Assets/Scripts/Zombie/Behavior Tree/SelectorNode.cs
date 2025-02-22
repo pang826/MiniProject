@@ -24,7 +24,6 @@ public class SelectorNode : Node
                     break;
             }
         }
-
         return curState = E_NodeState.Failure;
     }
 }

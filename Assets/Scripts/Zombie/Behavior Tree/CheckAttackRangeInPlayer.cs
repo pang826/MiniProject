@@ -27,6 +27,7 @@ public class CheckAttackRangeInPlayer : Node
         Collider[] collider = Physics.OverlapSphere(transform.position, 0.8f, playerLayer);
         if (collider.Length >= 1)
         {
+            Debug.Log("¹ß°ß");
             anim.SetFloat("speed", 0);
             return E_NodeState.Success;
         }

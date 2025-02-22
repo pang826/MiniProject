@@ -12,10 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2555b6c8a074d9448b470cfb0f8d1f5d, type: 3}
   m_Name: 2Stage
   m_EditorClassIdentifier: 
-  Round: 1
-  ZombiePrefab:
-  - {fileID: 6536048565187290973, guid: 91c902c0dc96f3744acd0d9e89dbe7fa, type: 3}
-  ZombieAmount: 8
-  SpawnCycle: 2
+  ZombieAmount: 16
+  SpawnCycle: 4
   SpawnPerCount: 4
   SpawnInterval: 5

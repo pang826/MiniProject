@@ -24,7 +24,8 @@ public class DieNode : Node
         {
             if(isDieAnimPlay == false)
             {
-                GameManager.Instance.DeadZombie();
+                Debug.Log("»ç¸Á");
+                //GameManager.Instance.DeadZombie();
                 isDieAnimPlay = true;
                 anim.SetTrigger("death");
             }

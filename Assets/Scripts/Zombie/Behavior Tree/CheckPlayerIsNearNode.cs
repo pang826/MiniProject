@@ -18,6 +18,7 @@ public class CheckPlayerIsNearNode : Node
         Collider[] collider = Physics.OverlapSphere(transform.position, 5.0f, playerLayer);
         if(collider.Length <= 0)
         {
+            Debug.Log("¹ß°ß");
             anim.SetFloat("speed", 0);
             return curState = E_NodeState.Failure;
         }

@@ -4,53 +4,55 @@ using UnityEngine;
 
 public class ZombieBT : Tree
 {
-    [SerializeField] Transform player;
+    [SerializeField] private Transform player;//
 
-    [SerializeField] Transform transform;
+    [SerializeField] private Animator anim;//
 
-    [SerializeField] Animator anim;
+    [SerializeField] private Collider attackRangeCol;//
 
-    [SerializeField] Collider attackRangeCol;
-
-    [SerializeField] ZombieData zData;
+    [SerializeField] private ZombieData zData;//
 
     public bool IsDamaged;
 
     public bool IsAttack;
 
-    [SerializeField] private int hp;
+    [SerializeField] private int hp;//
     public int Hp {  get { return hp; } }
 
-    private float speed;
+    private float speed;//
 
-    private float dmg;
+    private float dmg;//
 
     private void Awake()
     {
         hp = zData.Hp;
         speed = zData.Speed;
         dmg = zData.Dmg;
+        player = GameObject.FindGameObjectWithTag("Player").transform;
     }
 
     private void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player").transform;
+        base.Start();
+        Debug.Log("ZombieBT Start() ½ÇÇàµÊ, enabled »óÅÂ: ");
     }
+
     protected override Node SetUpBehaviorTree()
     {
         Node root = new SelectorNode(new List<Node>
         {
-            new DieNode(transform, anim, this),
+
+            new DieNode(this.transform, anim, this),
             new DamagedNode(anim, this),
             new SequenceNode(new List<Node>
             {
-                new CheckAttackRangeInPlayer(player, transform, anim, this),
-                new AttackPlayerNode(player, transform, anim, this)
+                new CheckAttackRangeInPlayer(player, this.transform, anim, this),
+                new AttackPlayerNode(player, this.transform, anim, this)
             }),
             new SequenceNode(new List<Node>
             {
-                new CheckPlayerIsNearNode(transform, anim),
-                new ChasePlayerNode(player, transform, anim, speed, IsAttack)
+                new CheckPlayerIsNearNode(this.transform, anim),
+                new ChasePlayerNode(player, this.transform, anim, speed, IsAttack)
             })
         });
         return root;
@@ -85,13 +87,5 @@ public class ZombieBT : Tree
         yield return new WaitForSeconds(0.2f);
         IsDamaged = false;
         yield break;
-    }
-
-    private void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.Space))
-        {
-            hp -= 3;
-        }
     }
 }

@@ -16,6 +16,7 @@ public class DamagedNode : Node
     {
         if(bt.IsDamaged)
         {
+            Debug.Log("µ¥¹ÌÁö");
             anim.SetBool("isDamage", true);
             return E_NodeState.Running;
         }
