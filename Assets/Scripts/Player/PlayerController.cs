@@ -99,31 +99,5 @@ public class PlayerController : MonoBehaviour, IPlayerState
         yield break;
     }
 
-    IEnumerator AttackRoutine(float curTime, float limit, bool isChecking, Collider collider)
-    {
-        isChecking = true;
-        collider.enabled = true;
-        anim.SetTrigger("isAttack");
-        while (true)
-        {
-            curTime += Time.deltaTime;
-            if(curTime >= 0.2f)
-            {
-                collider.enabled = false;
-            }
-            if (curTime >= limit)
-            {
-                isChecking = false;
-                curTime = 0;
-                yield break;
-            }
-            yield return null;
-        }
-
-    }
-
-    public void StartAttackRoutine(float curTime, float limit, bool isCheck, Collider collider)
-    {
-        StartCoroutine(AttackRoutine(curTime, limit, isCheck, collider));
-    }
+    
 }

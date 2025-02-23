@@ -14,6 +14,7 @@ public class PlayerAttackState : IPlayerState
     private float curTime;
     private float limitTime = 1.5f;
     private bool isAttacking;
+    private LayerMask zombieLayer;
     public PlayerAttackState(PlayerController controller, Animator anim, BoxCollider collider)
     {
         this.controller = controller;
@@ -23,36 +24,56 @@ public class PlayerAttackState : IPlayerState
 
     public void OnEnter()
     {
+        Debug.Log("에임상태 진입");
+        anim.SetBool("isAiming", true);
         curTime = 0f;
     }
 
     public void OnUpdate()
     {
-        Debug.Log($"현재시간{curTime}");
-        Debug.Log($"제한시간{limitTime}");
-        Debug.Log($"확인{isAttacking}");
- 
-        if (Input.GetMouseButton(1))
+        
+        // 마우스 위치 받아와서 캐릭터가 거기로 회전하도록 설정
+        Vector3 mousePos = Input.mousePosition;
+        mousePos.z = Camera.main.transform.position.y - controller.transform.position.y; // 높이 보정
+        Vector3 worldMousePos = Camera.main.ScreenToWorldPoint(mousePos);
+
+        Vector3 direction = (worldMousePos - controller.transform.position).normalized;
+        direction.y = 0;
+        if (direction != Vector3.zero)
         {
-            // 마우스 위치 받아와서 거기 쳐다보게 하기
-            if (Input.GetMouseButtonDown(0) && isAttacking == false)
-            {
-                controller.StartAttackRoutine(curTime, limitTime, isAttacking, collider);
-            }
+            Quaternion lookRotation = Quaternion.LookRotation(direction, Vector3.up);
+            controller.transform.rotation = Quaternion.RotateTowards(controller.transform.rotation, lookRotation, 360 * Time.deltaTime);
         }
-        else
+        if (Input.GetMouseButtonDown(0))
         {
-            if (isAttacking == false)
-            {
-                controller.ChangeState(E_PlayerState.Idle);
-            }
+            Shoot(direction);
+        }
+
+        
+        if(Input.GetMouseButtonUp(1))
+        {
+            controller.ChangeState(E_PlayerState.Idle);
         }
     }
 
     public void OnExit()
     {
-
+        anim.SetBool("isAiming", false);
     }
 
-    
+    private void Shoot(Vector3 direction)
+    {
+        RaycastHit hit;
+        Vector3 shootOrigin = controller.transform.position + new Vector3(0, 0.5f, 0);
+        Vector3 shootDirection = controller.transform.forward;
+        if (Physics.Raycast(shootOrigin, shootDirection, out hit, 100))
+        {
+            Debug.DrawRay(shootOrigin, shootDirection, Color.red);
+            ZombieBT zombie = hit.collider.GetComponent<ZombieBT>();
+            if (zombie != null)
+            {
+                Debug.Log("명중");
+            }
+        }
+    }
 }

@@ -46,7 +46,7 @@ public class AttackPlayerNode : Node
     {
         Debug.Log("공격 실행!");
         // 실제 공격 로직 (애니메이션 재생, 데미지 적용 등) 추가 가능
-        bt.StartAttackRoutine();
+        //bt.StartAttackRoutine();
         anim.SetTrigger("IsAttack");
     }
 }
