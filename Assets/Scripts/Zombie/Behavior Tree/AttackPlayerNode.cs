@@ -21,7 +21,7 @@ public class AttackPlayerNode : Node
 
     public override E_NodeState Evaluate()
     {
-        if (!bt.IsAttack)
+        if (bt.IsAttack == false && bt.IsStuck == false)
         {
             bt.IsAttack = true;
             curTime = 0f;

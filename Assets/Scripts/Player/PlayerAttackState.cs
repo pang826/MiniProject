@@ -72,6 +72,7 @@ public class PlayerAttackState : IPlayerState
             ZombieBT zombie = hit.collider.GetComponent<ZombieBT>();
             if (zombie != null)
             {
+                zombie.Damaged();
                 Debug.Log("ИэСп");
             }
         }

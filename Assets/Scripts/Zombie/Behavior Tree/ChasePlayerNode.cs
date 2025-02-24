@@ -9,18 +9,20 @@ public class ChasePlayerNode : Node
     private Animator anim;
     private float speed;
     private bool isAttack;
+    private ZombieBT bt;
 
-    public ChasePlayerNode(Transform player, Transform transform, Animator anim, float speed, bool isAttack)
+    public ChasePlayerNode(Transform player, Transform transform, Animator anim, float speed, bool isAttack, ZombieBT bt)
     {
         this.player = player;
         this.transform = transform;
         this.anim = anim;
         this.speed = speed;
         this.isAttack = isAttack;
+        this.bt = bt;
     }
     public override E_NodeState Evaluate()
     {
-        if(isAttack == false) 
+        if(bt.IsAttack == false && bt.IsStuck == false) 
         {
             transform.LookAt(player);
             transform.position = Vector3.MoveTowards(transform.position, player.position, Time.deltaTime * speed);

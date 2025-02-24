@@ -16,6 +16,8 @@ public class ZombieBT : Tree
 
     public bool IsAttack;
 
+    public bool IsStuck;
+
     [SerializeField] private int hp;//
     public int Hp {  get { return hp; } }
 
@@ -52,7 +54,7 @@ public class ZombieBT : Tree
             new SequenceNode(new List<Node>
             {
                 new CheckPlayerIsNearNode(this.transform, anim),
-                new ChasePlayerNode(player, this.transform, anim, speed, IsAttack)
+                new ChasePlayerNode(player, this.transform, anim, speed, IsAttack, this)
             })
         });
         return root;
@@ -87,5 +89,21 @@ public class ZombieBT : Tree
         yield return new WaitForSeconds(0.2f);
         IsDamaged = false;
         yield break;
+    }
+
+    IEnumerator StuckRoutine()
+    {
+        IsStuck = true;
+        yield return new WaitForSeconds(1.5f);
+        IsStuck = false;
+        yield break;
+    }
+    public void Damaged()
+    {
+        StartCoroutine(StuckRoutine());
+        if(IsDamaged == false)
+        {
+            StartCoroutine(DamagedRoutine());
+        }
     }
 }

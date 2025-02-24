@@ -28,6 +28,7 @@ public class DieNode : Node
                 //GameManager.Instance.DeadZombie();
                 isDieAnimPlay = true;
                 anim.SetTrigger("death");
+                transform.gameObject.GetComponent<CapsuleCollider>().enabled = false;
             }
             return E_NodeState.Success;
         }
