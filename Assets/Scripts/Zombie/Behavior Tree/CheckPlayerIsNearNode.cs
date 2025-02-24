@@ -15,7 +15,7 @@ public class CheckPlayerIsNearNode : Node
     }
     public override E_NodeState Evaluate()
     {
-        Collider[] collider = Physics.OverlapSphere(transform.position, 5.0f, playerLayer);
+        Collider[] collider = Physics.OverlapSphere(transform.position, 10f, playerLayer);
         if(collider.Length <= 0)
         {
             Debug.Log("¹ß°ß");

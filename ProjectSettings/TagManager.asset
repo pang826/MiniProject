@@ -13,6 +13,7 @@ TagManager:
   - InGameUi
   - DieUi
   - SceneChanger
+  - Goal
   layers:
   - Default
   - TransparentFX

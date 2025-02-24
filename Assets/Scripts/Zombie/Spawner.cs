@@ -47,8 +47,10 @@ public class Spawner : MonoBehaviour
             {
                 curTime = 0f;
                 curRepeatCount++;
-                GameObject.Instantiate(man, spawnPoint[0], Quaternion.identity);
+                GameObject.Instantiate(woman, spawnPoint[0], Quaternion.identity);
                 GameObject.Instantiate(woman, spawnPoint[1], Quaternion.identity);
+                GameObject.Instantiate(woman, spawnPoint[2], Quaternion.identity);
+                GameObject.Instantiate(woman, spawnPoint[3], Quaternion.identity);
             }
             else if(curRepeatCount >= repeatCount) { yield break; }
             yield return null;

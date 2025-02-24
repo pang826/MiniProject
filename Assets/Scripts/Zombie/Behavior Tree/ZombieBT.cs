@@ -6,6 +6,8 @@ public class ZombieBT : Tree
 {
     [SerializeField] private Transform player;//
 
+    [SerializeField] private Transform goal;
+
     [SerializeField] private Animator anim;//
 
     [SerializeField] private Collider attackRangeCol;//
@@ -31,6 +33,7 @@ public class ZombieBT : Tree
         speed = zData.Speed;
         dmg = zData.Dmg;
         player = GameObject.FindGameObjectWithTag("Player").transform;
+        goal = GameObject.FindGameObjectWithTag("Goal").transform;
     }
 
     private void Start()
@@ -55,7 +58,8 @@ public class ZombieBT : Tree
             {
                 new CheckPlayerIsNearNode(this.transform, anim),
                 new ChasePlayerNode(player, this.transform, anim, speed, IsAttack, this)
-            })
+            }),
+            new GoToCenterNode(this.transform,  goal, anim, this, speed)
         });
         return root;
     }
