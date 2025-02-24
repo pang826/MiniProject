@@ -25,10 +25,11 @@ public class DieNode : Node
             if(isDieAnimPlay == false)
             {
                 Debug.Log("»ç¸Á");
-                //GameManager.Instance.DeadZombie();
+                GameManager.Instance.DeadZombie();
                 isDieAnimPlay = true;
                 anim.SetTrigger("death");
                 transform.gameObject.GetComponent<CapsuleCollider>().enabled = false;
+                GameObject.Destroy(transform.gameObject, 3);
             }
             return E_NodeState.Success;
         }
