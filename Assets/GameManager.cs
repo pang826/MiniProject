@@ -36,6 +36,8 @@ public class GameManager : MonoBehaviour
 
     public UnityAction OnChangeState;
 
+    public UnityAction OnDefeatGame;
+
     private void Awake()
     {
         if (instance == null)

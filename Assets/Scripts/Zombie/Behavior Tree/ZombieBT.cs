@@ -1,31 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using UnityEngine;
 
 public class ZombieBT : Tree
 {
     [SerializeField] private Transform player;//
-
     [SerializeField] private Transform goal;
-
     [SerializeField] private Animator anim;//
-
     [SerializeField] private Collider attackRangeCol;//
-
     [SerializeField] private ZombieData zData;//
 
     public bool IsDamaged;
-
     public bool IsAttack;
-
     public bool IsStuck;
 
-    [SerializeField] private int hp;//
+    [SerializeField] private int hp;
     public int Hp {  get { return hp; } }
-
-    private float speed;//
-
-    private float dmg;//
+    private float speed;
+    private float dmg;
 
     private void Awake()
     {
@@ -40,6 +33,7 @@ public class ZombieBT : Tree
     {
         base.Start();
         Debug.Log("ZombieBT Start() ½ÇÇàµÊ, enabled »óÅÂ: ");
+        GameManager.Instance.OnDefeatGame += ResetTarget;
     }
 
     protected override Node SetUpBehaviorTree()
@@ -49,6 +43,11 @@ public class ZombieBT : Tree
 
             new DieNode(this.transform, anim, this),
             new DamagedNode(anim, this),
+            new SequenceNode(new List<Node>
+            {
+                new CheckGoalNode(this.transform, anim, this, goal),
+                new AttackGoalNode(this.transform, anim, this, goal)
+            }),
             new SequenceNode(new List<Node>
             {
                 new CheckAttackRangeInPlayer(player, this.transform, anim, this),
@@ -81,9 +80,7 @@ public class ZombieBT : Tree
     private void OnCollisionEnter(Collision collision)
     {
         if(collision.collider.gameObject.GetComponent<PlayerController>() && IsDamaged == false && collision.collider is BoxCollider)
-        {
             StartCoroutine(DamagedRoutine());
-        }
     }
 
     IEnumerator DamagedRoutine()
@@ -106,8 +103,11 @@ public class ZombieBT : Tree
     {
         StartCoroutine(StuckRoutine());
         if(IsDamaged == false)
-        {
             StartCoroutine(DamagedRoutine());
-        }
+    }
+
+    private void ResetTarget()
+    {
+        goal = null;
     }
 }

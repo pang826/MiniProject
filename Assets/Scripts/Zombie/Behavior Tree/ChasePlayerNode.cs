@@ -27,8 +27,6 @@ public class ChasePlayerNode : Node
             transform.LookAt(player);
             transform.position = Vector3.MoveTowards(transform.position, player.position, Time.deltaTime * speed);
         }
-        Debug.Log("추적");
-        //TODO : 애니메이션 추가
         anim.SetFloat("speed", 0.5f);
         return curState = E_NodeState.Running;
     }

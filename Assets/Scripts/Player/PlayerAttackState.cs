@@ -9,17 +9,14 @@ public class PlayerAttackState : IPlayerState
 
     Vector3 mouseDir;
 
-    BoxCollider collider;
-
     private float curTime;
     private float limitTime = 1.5f;
     private bool isAttacking;
     private LayerMask zombieLayer;
-    public PlayerAttackState(PlayerController controller, Animator anim, BoxCollider collider)
+    public PlayerAttackState(PlayerController controller, Animator anim)
     {
         this.controller = controller;
         this.anim = anim;
-        this.collider = collider;
     }
 
     public void OnEnter()

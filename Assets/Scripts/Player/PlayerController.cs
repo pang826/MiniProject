@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour, IPlayerState
 {
-    public E_PlayerState CurState; // »óÅÂ È®ÀÎ¿ë
+    public E_PlayerState CurState; // ï¿½ï¿½ï¿½ï¿½ È®ï¿½Î¿ï¿½
     private IPlayerState state;
 
     private Animator anim;
@@ -18,8 +18,6 @@ public class PlayerController : MonoBehaviour, IPlayerState
 
     private bool isDamaged;
     private bool isDied;
-
-    [SerializeField] BoxCollider collider;
 
     private void Awake()
     {
@@ -56,7 +54,7 @@ public class PlayerController : MonoBehaviour, IPlayerState
     {
         state?.OnExit();
         state = SelectState(changeState);
-        CurState = changeState; // »óÅÂ È®ÀÎ¿ë
+        CurState = changeState; // ï¿½ï¿½ï¿½ï¿½ È®ï¿½Î¿ï¿½
         state.OnEnter();
     }
 
@@ -73,7 +71,7 @@ public class PlayerController : MonoBehaviour, IPlayerState
             case E_PlayerState.Damaged:
                 return new PlayerDamagedState(this, anim);
             case E_PlayerState.Attack:
-                return new PlayerAttackState(this, anim, collider);
+                return new PlayerAttackState(this, anim);
             case E_PlayerState.Die:
                 return new PlayerDieState(this, anim);
             default:
@@ -98,6 +96,4 @@ public class PlayerController : MonoBehaviour, IPlayerState
         isDamaged = false;
         yield break;
     }
-
-    
 }

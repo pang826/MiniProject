@@ -26,7 +26,9 @@ public class GoToCenterNode : Node
     }
     public override E_NodeState Evaluate()
     {
+        transform.LookAt(goal);
         transform.position = Vector3.MoveTowards(transform.position, goal.position, Time.deltaTime * speed);
+        anim.SetFloat("speed", 0.5f);
         return curState = E_NodeState.Running;
     }
 }
