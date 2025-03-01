@@ -15,6 +15,7 @@ public class PlayerDieState : IPlayerState
     public void OnEnter()
     {
         anim.SetTrigger("Die");
+        GameManager.Instance.OnDefeatGame.Invoke();
     }
 
     public void OnUpdate()

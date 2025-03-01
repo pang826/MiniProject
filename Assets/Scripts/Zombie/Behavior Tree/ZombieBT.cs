@@ -77,21 +77,6 @@ public class ZombieBT : Tree
         yield break;
     }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        if(collision.collider.gameObject.GetComponent<PlayerController>() && IsDamaged == false && collision.collider is BoxCollider)
-            StartCoroutine(DamagedRoutine());
-    }
-
-    IEnumerator DamagedRoutine()
-    {
-        IsDamaged = true;
-        hp -= 3;
-        yield return new WaitForSeconds(0.2f);
-        IsDamaged = false;
-        yield break;
-    }
-
     IEnumerator StuckRoutine()
     {
         IsStuck = true;
@@ -102,8 +87,6 @@ public class ZombieBT : Tree
     public void Damaged()
     {
         StartCoroutine(StuckRoutine());
-        if(IsDamaged == false)
-            StartCoroutine(DamagedRoutine());
     }
 
     private void ResetTarget()

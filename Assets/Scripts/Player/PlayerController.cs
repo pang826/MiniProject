@@ -80,13 +80,6 @@ public class PlayerController : MonoBehaviour, IPlayerState
         }
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other != null && other.gameObject.layer == 7 && isDied == false && isDamaged == false && other.GetComponent<BoxCollider>())
-        {
-            StartCoroutine(DamageRoutine());
-        }
-    }
 
     IEnumerator DamageRoutine()
     {
@@ -95,5 +88,10 @@ public class PlayerController : MonoBehaviour, IPlayerState
         yield return new WaitForSeconds(0.5f);
         isDamaged = false;
         yield break;
+    }
+
+    public void TakeDamage()
+    {
+        StartCoroutine(DamageRoutine());
     }
 }

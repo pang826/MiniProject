@@ -62,10 +62,9 @@ public class PlayerAttackState : IPlayerState
     {
         RaycastHit hit;
         Vector3 shootOrigin = controller.transform.position + new Vector3(0, 0.5f, 0);
-        Vector3 shootDirection = controller.transform.forward;
-        if (Physics.Raycast(shootOrigin, shootDirection, out hit, 100))
+
+        if (Physics.Raycast(shootOrigin, direction, out hit, 100))
         {
-            Debug.DrawRay(shootOrigin, shootDirection, Color.red);
             ZombieBT zombie = hit.collider.GetComponent<ZombieBT>();
             if (zombie != null)
             {
