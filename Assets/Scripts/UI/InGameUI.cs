@@ -13,11 +13,13 @@ public class InGameUI : MonoBehaviour
 
     [SerializeField] Button endGameButton;
     [SerializeField] Button mainMenuButton;
+    [SerializeField] TextMeshProUGUI defeatTMP;
+    [SerializeField] TextMeshProUGUI winTMP;
 
     private void Start()
     {
         GameManager.Instance.OnDefeatGame += EndGame;
-        
+        GameManager.Instance.OnWinGame += WinGame;
     }
 
     private void EndGame()
@@ -25,6 +27,17 @@ public class InGameUI : MonoBehaviour
         inventory.enabled = false;
         itemSpot.enabled = false;
         endScreen.gameObject.SetActive(true);
+        winTMP.gameObject.SetActive(false);
+        endGameButton.onClick.AddListener(GameObject.FindGameObjectWithTag("SceneChanger").GetComponent<SceneChanger>().ExitGame);
+        mainMenuButton.onClick.AddListener(GameObject.FindGameObjectWithTag("SceneChanger").GetComponent<SceneChanger>().SceneChange_TitleScene);
+    }
+
+    private void WinGame()
+    {
+        inventory.enabled = false;
+        itemSpot.enabled = false;
+        endScreen.gameObject.SetActive(true);
+        defeatTMP.gameObject.SetActive(false);
         endGameButton.onClick.AddListener(GameObject.FindGameObjectWithTag("SceneChanger").GetComponent<SceneChanger>().ExitGame);
         mainMenuButton.onClick.AddListener(GameObject.FindGameObjectWithTag("SceneChanger").GetComponent<SceneChanger>().SceneChange_TitleScene);
     }

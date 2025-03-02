@@ -6,7 +6,7 @@ public class DamagedNode : Node
 {
     Animator anim;
     ZombieBT bt;
-    bool isCheck;
+    
     public DamagedNode(Animator anim, ZombieBT bt)
     {
         this.anim = anim;

@@ -38,6 +38,8 @@ public class GameManager : MonoBehaviour
 
     public UnityAction OnDefeatGame;
 
+    public UnityAction OnWinGame;
+
     private void Awake()
     {
         if (instance == null)
@@ -65,6 +67,11 @@ public class GameManager : MonoBehaviour
     private void StageUp()
     {
         stage++;
+        if(stage == 4)
+        {
+            OnWinGame.Invoke();
+            return;
+        }
         curStageData = stageData[(stage - 1)];
         amount = curStageData.ZombieAmount;
         cycle = curStageData.SpawnCycle;

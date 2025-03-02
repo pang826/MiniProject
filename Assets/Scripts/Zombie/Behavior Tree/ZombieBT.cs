@@ -77,6 +77,14 @@ public class ZombieBT : Tree
         yield break;
     }
 
+    IEnumerator DamagedRoutine()
+    {
+        IsDamaged = true;
+        hp -= 3;
+        yield return new WaitForSeconds(0.2f);
+        IsDamaged = false;
+        yield break;
+    }
     IEnumerator StuckRoutine()
     {
         IsStuck = true;
@@ -87,6 +95,8 @@ public class ZombieBT : Tree
     public void Damaged()
     {
         StartCoroutine(StuckRoutine());
+        if (IsDamaged == false)
+            StartCoroutine(DamagedRoutine());
     }
 
     private void ResetTarget()
