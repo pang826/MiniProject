@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour, IPlayerState
 
     private bool isDamaged;
     private bool isDied;
+    public bool IsDied { get { return isDied; } }
 
     private void Awake()
     {

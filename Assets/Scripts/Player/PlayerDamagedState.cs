@@ -18,7 +18,7 @@ public class PlayerDamagedState : IPlayerState
     public void OnEnter()
     {
         controller.Hp -= 2;
-        anim.SetTrigger("IsDamaged");
+        anim.SetTrigger("isDamaged");
         curTime = 0;
     }
 

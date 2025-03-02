@@ -6,11 +6,11 @@ public class AttackCollider : MonoBehaviour
 {
     private void OnTriggerEnter(Collider other)
     {
-        if(other.TryGetComponent(out Goal goal))
+        if(other.TryGetComponent(out Goal goal) && goal.IsExplosive == false)
         {
             goal.TakeDamage();
         }
-        if (other.TryGetComponent(out PlayerController player))
+        if (other.TryGetComponent(out PlayerController player) && player.IsDied == false)
         {
             player.TakeDamage();
         }
