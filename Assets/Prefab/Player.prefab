@@ -958,6 +958,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3389030731041099616}
+  - component: {fileID: 2919168201245942918}
+  - component: {fileID: 8931902677469522442}
   - component: {fileID: 8784391654358095130}
   - component: {fileID: 2919168201245942921}
   - component: {fileID: 2919168201245942920}
@@ -965,7 +967,6 @@ GameObject:
   - component: {fileID: 2919168201245942922}
   - component: {fileID: 2919168201245942925}
   - component: {fileID: 2919168201245942924}
-  - component: {fileID: 2919168201245942918}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -996,6 +997,34 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2919168201245942918
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2613092543728326106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5b61ee933600e641b8b07ea6b4eb09d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CurState: 0
+  walkSpeed: 5
+  runSpeed: 7
+  hp: 30
+--- !u!114 &8931902677469522442
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2613092543728326106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6d863d62f160614dba0b78e74a167cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!95 &8784391654358095130
 Animator:
   serializedVersion: 5
@@ -1288,22 +1317,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &2919168201245942918
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2613092543728326106}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c5b61ee933600e641b8b07ea6b4eb09d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CurState: 0
-  walkSpeed: 5
-  runSpeed: 7
-  hp: 30
 --- !u!1 &2943826053343752663
 GameObject:
   m_ObjectHideFlags: 0
