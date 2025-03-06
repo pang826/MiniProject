@@ -2,12 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class Test : PickUpObject
+public class Test2 : PickUpObject
 {
     private void OnEnable()
     {
-        name = "TestObject";
+        name = "TestObject2";
     }
 }

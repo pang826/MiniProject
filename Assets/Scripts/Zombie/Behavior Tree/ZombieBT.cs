@@ -32,7 +32,6 @@ public class ZombieBT : Tree
     private void Start()
     {
         base.Start();
-        Debug.Log("ZombieBT Start() 실행됨, enabled 상태: ");
         GameManager.Instance.OnDefeatGame += ResetTarget;
     }
 

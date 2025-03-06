@@ -6,13 +6,6 @@ public class PlayerAttackState : IPlayerState
 {
     PlayerController controller;
     Animator anim;
-
-    Vector3 mouseDir;
-
-    private float curTime;
-    private float limitTime = 1.5f;
-    private bool isAttacking;
-    private LayerMask zombieLayer;
     public PlayerAttackState(PlayerController controller, Animator anim)
     {
         this.controller = controller;
@@ -21,9 +14,7 @@ public class PlayerAttackState : IPlayerState
 
     public void OnEnter()
     {
-        Debug.Log("에임상태 진입");
         anim.SetBool("isAiming", true);
-        curTime = 0f;
     }
 
     public void OnUpdate()
