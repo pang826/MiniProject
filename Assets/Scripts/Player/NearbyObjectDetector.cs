@@ -4,21 +4,17 @@ using UnityEngine;
 
 public class NearbyObjectDetector : MonoBehaviour
 {
-    [SerializeField] private List<PickUpObject> objects;
-
-    [SerializeField] private GameObject itemSpot;
-
-    [SerializeField] private GameObject prefab;
+    [SerializeField] private RectTransform itemSpot;
 
     private void Awake()
     {
-        itemSpot = GameObject.FindGameObjectWithTag("ItemSpot").transform.GetChild(0).GetChild(0).gameObject;
+        itemSpot = GameObject.FindGameObjectWithTag("ItemSpot").GetComponent<RectTransform>();
     }
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.TryGetComponent(out PickUpObject obj))
         {
-            obj.FloatItemInformation(itemSpot, prefab, obj, objects);
+            obj.FloatItemInformation(itemSpot, obj);
         }
     }
 
@@ -26,7 +22,7 @@ public class NearbyObjectDetector : MonoBehaviour
     {
         if (other.gameObject.TryGetComponent(out PickUpObject obj))
         {
-            obj.DisableItemInformation(obj, objects);
+            obj.DisableItemInformation(obj);
         }
     }
 }
