@@ -35,7 +35,6 @@ public class AttackPlayerNode : Node
             if (curTime >= attackCooldown) // 쿨타임이 지나면 다시 공격 가능
             {
                 bt.IsAttack = false;
-                //return curState = E_NodeState.Failure;
             }
         }
         

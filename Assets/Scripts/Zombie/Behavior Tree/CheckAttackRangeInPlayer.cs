@@ -24,13 +24,27 @@ public class CheckAttackRangeInPlayer : Node
         {
             return curState = E_NodeState.Running;
         }
-        Collider[] collider = Physics.OverlapSphere(transform.position, 0.2f, playerLayer);
-        if (collider.Length >= 1)
+        Collider[] colliders = Physics.OverlapSphere(transform.position, 0.5f, playerLayer);
+        
+        if (colliders.Length >= 1)
         {
-            Debug.Log("발견");
-            anim.SetFloat("speed", 0);
-            return E_NodeState.Success;
+            foreach (Collider collider in colliders) 
+            {
+                if(collider.isTrigger == false)
+                {
+                    Debug.Log(colliders[0]);
+                    Debug.Log("발견");
+                    anim.SetFloat("speed", 0);
+                    return E_NodeState.Success;
+                }
+            }
         }
         return curState = E_NodeState.Failure;
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red; // 색상 지정
+        Gizmos.DrawWireSphere(transform.position, 0.01f); // 구 영역 시각화
     }
 }
