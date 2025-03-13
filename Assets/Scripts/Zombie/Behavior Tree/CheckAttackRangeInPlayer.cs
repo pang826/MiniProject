@@ -9,7 +9,7 @@ public class CheckAttackRangeInPlayer : Node
     private Transform transform;
     private Animator anim;
     private ZombieBT bt;
-    private bool isAttack;
+    
     public CheckAttackRangeInPlayer(Transform player, Transform transform, Animator anim, ZombieBT bt)
     {
         this.player = player;
@@ -24,7 +24,7 @@ public class CheckAttackRangeInPlayer : Node
         {
             return curState = E_NodeState.Running;
         }
-        Collider[] collider = Physics.OverlapSphere(transform.position, 0.8f, playerLayer);
+        Collider[] collider = Physics.OverlapSphere(transform.position, 0.2f, playerLayer);
         if (collider.Length >= 1)
         {
             Debug.Log("¹ß°ß");

@@ -5,8 +5,8 @@ using UnityEngine;
 public class Inventory : MonoBehaviour
 {
     [SerializeField] private NearbyObjectDetector detector;
-    public List<PickUpObject> inventory;
-    public LinkedList<PickUpObject> Inventory;
+    
+    public LinkedList<PickUpObject> InventoryLinkedList = new LinkedList<PickUpObject>();
     private void Awake()
     {
         detector = GameObject.FindGameObjectWithTag("Player").transform.GetChild(0).GetComponent<NearbyObjectDetector>();

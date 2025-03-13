@@ -2727,7 +2727,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   detector: {fileID: 0}
-  inventory: []
 --- !u!1 &943754956 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 636644412777839680, guid: 4891660eb33e6e3468262186866ad933, type: 3}

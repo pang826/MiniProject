@@ -26,7 +26,7 @@ public abstract class PickUpObject : MonoBehaviour
     {
         CreateObj(inventory, obj);
 
-        inventory.GetComponent<Inventory>().Inventory.AddLast(obj);
+        inventory.GetComponent<Inventory>().InventoryLinkedList.AddLast(obj);
 
         
         obj.gameObject.SetActive(false);
@@ -36,7 +36,7 @@ public abstract class PickUpObject : MonoBehaviour
     {
         CreateObj(itemSpot, obj);
 
-        inventory.GetComponent<Inventory>().Inventory.Remove(obj);
+        inventory.GetComponent<Inventory>().InventoryLinkedList.Remove(obj);
         if(obj.gameObject.activeSelf == false)
         {
             obj.gameObject.SetActive(true);

@@ -55,6 +55,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3980941191155737539}
   - component: {fileID: 7977559265335695775}
+  - component: {fileID: 7335737126258707631}
   - component: {fileID: 8429702874824883731}
   - component: {fileID: 1168744430075663392}
   m_Layer: 0
@@ -102,6 +103,24 @@ MonoBehaviour:
   IsAttack: 0
   IsStuck: 0
   hp: 0
+--- !u!114 &7335737126258707631
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6536048565187290973}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMode: 0
+  outlineColor: {r: 0.12156863, g: 1, b: 0.003921569, a: 1}
+  outlineWidth: 2
+  precomputeOutline: 0
+  bakeKeys: []
+  bakeValues: []
 --- !u!82 &8429702874824883731
 AudioSource:
   m_ObjectHideFlags: 0
