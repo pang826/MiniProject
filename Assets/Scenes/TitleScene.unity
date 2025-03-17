@@ -516,7 +516,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6da4ce2c9433df54bac4af9a42a22bb8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  score: 0
+  stageData:
+  - {fileID: 11400000, guid: bc88c55f96f8c3b4a983f797d2106648, type: 2}
+  - {fileID: 11400000, guid: d5a2556ffbd93c94b95bfb1877fb1070, type: 2}
+  - {fileID: 11400000, guid: a82719195b7008549a8b6a76f030771b, type: 2}
 --- !u!4 &877486053
 Transform:
   m_ObjectHideFlags: 0

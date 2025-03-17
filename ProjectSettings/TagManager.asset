@@ -11,8 +11,9 @@ TagManager:
   - SoundManager
   - ItemSpot
   - InGameUi
-  - DieUi
   - SceneChanger
+  - Goal
+  - Inventory
   layers:
   - Default
   - TransparentFX
